@@ -49,9 +49,9 @@ def build_clean_white_diagram():
     # -------------------------------------------------------------
     # TOP HEADER
     # -------------------------------------------------------------
-    ax.text(8.0, 7.15, "Layer Architecture: Standard Transformer vs. NeuroWorld-LM", 
+    ax.text(8.0, 7.15, "Layer Architecture: Standard Transformer vs. Hokie-LM", 
             ha='center', va='center', fontsize=17, fontweight='bold', color=c_text_dark)
-    ax.text(8.0, 6.82, "Detailed computational dataflow, memory buffers, and state recurrence inside a single layer l", 
+    ax.text(8.0, 6.82, r"Detailed computational dataflow, memory buffers, and state recurrence inside a single layer $l$", 
             ha='center', va='center', fontsize=10.5, color=c_text_muted)
 
     # -------------------------------------------------------------
@@ -63,12 +63,12 @@ def build_clean_white_diagram():
     ax.add_patch(tf_outer)
 
     # Stack Bracket: Layer (l)
-    ax.text(1.15, 3.5, "Stacked  x L Layers", ha='center', va='center', rotation=90,
+    ax.text(1.15, 3.5, r"Stacked $\times L$ Layers", ha='center', va='center', rotation=90,
             fontsize=9.5, fontweight='bold', color=c_tf_border)
     ax.plot([1.35, 1.35], [1.0, 6.0], color='#CBD5E1', lw=1.2, linestyle='--')
 
     # Panel Title
-    ax.text(4.45, 6.25, "Standard Transformer Layer (l)", ha='center', va='center',
+    ax.text(4.45, 6.25, r"Standard Transformer Layer ($l$)", ha='center', va='center',
             fontsize=12.5, fontweight='bold', color=c_tf_border)
     ax.text(4.45, 6.02, "Autoregressive Multi-Head Self-Attention with KV Cache", ha='center', va='center',
             fontsize=8.5, color=c_text_muted)
@@ -77,7 +77,7 @@ def build_clean_white_diagram():
     inp_tf = patches.FancyBboxPatch((2.65, 5.48), 3.6, 0.35, boxstyle="round,pad=0.06",
                                     facecolor='#FFFFFF', edgecolor='#CBD5E1', linewidth=1.0)
     ax.add_patch(inp_tf)
-    ax.text(4.45, 5.655, "Input:  x_t^(l-1)  in  R^(B x d_model)", ha='center', va='center',
+    ax.text(4.45, 5.655, r"Input: $x_t^{(l-1)} \in \mathbb{R}^{B \times d_{\mathrm{model}}}$", ha='center', va='center',
             fontsize=8.8, fontweight='bold', color=c_text_body)
 
     # Arrow Down to RMSNorm 1
@@ -100,22 +100,22 @@ def build_clean_white_diagram():
             fontsize=9.8, fontweight='bold', color=c_tf_border)
 
     # Q, K, V Projections
-    ax.text(2.45, 4.12, "Q = x W_Q", ha='center', va='center', fontsize=7.8, color=c_text_dark,
+    ax.text(2.45, 4.12, r"$Q = x W_Q$", ha='center', va='center', fontsize=7.8, color=c_text_dark,
             bbox=dict(boxstyle="round,pad=0.15", facecolor='#FFFFFF', edgecolor='#FDA4AF'))
-    ax.text(3.78, 4.12, "K = x W_K", ha='center', va='center', fontsize=7.8, color=c_text_dark,
+    ax.text(3.78, 4.12, r"$K = x W_K$", ha='center', va='center', fontsize=7.8, color=c_text_dark,
             bbox=dict(boxstyle="round,pad=0.15", facecolor='#FFFFFF', edgecolor='#FDA4AF'))
-    ax.text(5.12, 4.12, "V = x W_V", ha='center', va='center', fontsize=7.8, color=c_text_dark,
+    ax.text(5.12, 4.12, r"$V = x W_V$", ha='center', va='center', fontsize=7.8, color=c_text_dark,
             bbox=dict(boxstyle="round,pad=0.15", facecolor='#FFFFFF', edgecolor='#FDA4AF'))
 
     # KV-Cache Pool Box (Expanding Buffer)
     kv_box = patches.FancyBboxPatch((1.85, 3.15), 5.2, 0.75, boxstyle="round,pad=0.06",
                                     facecolor=c_tf_kv, edgecolor=c_tf_kv_border, linewidth=1.2, linestyle='--')
     ax.add_patch(kv_box)
-    ax.text(4.45, 3.7, "[!] Key-Value Cache Buffer (Unbounded O(T) VRAM)", ha='center', va='center',
+    ax.text(4.45, 3.7, r"[!] Key-Value Cache Buffer (Unbounded $\mathcal{O}(T)$ VRAM)", ha='center', va='center',
             fontsize=8.2, fontweight='bold', color=c_tf_kv_border)
-    ax.text(4.45, 3.48, "History Buffer: K_{<=t} = [k_1, ..., k_t],  V_{<=t} = [v_1, ..., v_t]", ha='center', va='center',
+    ax.text(4.45, 3.48, r"History Buffer: $K_{\leq t} = [k_1, \dots, k_t],\; V_{\leq t} = [v_1, \dots, v_t]$", ha='center', va='center',
             fontsize=7.4, color=c_text_body)
-    ax.text(4.45, 3.28, "Softmax Weights: w_ij = exp(q_i k_j^T / sqrt(d)) > 0  ==>  NO FORGETTING", ha='center', va='center',
+    ax.text(4.45, 3.28, r"Softmax: $w_{ij} = \mathrm{softmax}(q_i k_j^\top / \sqrt{d}) > 0 \Rightarrow$ NO FORGETTING", ha='center', va='center',
             fontsize=7.2, fontweight='bold', color='#991B1B')
 
     # Arrow Down to Add 1
@@ -147,7 +147,7 @@ def build_clean_white_diagram():
     ax.add_patch(ffn_box)
     ax.text(4.45, 1.6, "Feed-Forward Network (SwiGLU / MLP)", ha='center', va='center',
             fontsize=8.8, fontweight='bold', color=c_text_dark)
-    ax.text(4.45, 1.42, "y = (SiLU(x W_gate) * (x W_up)) W_down", ha='center', va='center',
+    ax.text(4.45, 1.42, r"$y = (\mathrm{SiLU}(x W_{\mathrm{gate}}) \odot (x W_{\mathrm{up}})) W_{\mathrm{down}}$", ha='center', va='center',
             fontsize=7.4, color=c_text_muted)
 
     # Arrow Down to Add 2
@@ -168,15 +168,15 @@ def build_clean_white_diagram():
     out_tf = patches.FancyBboxPatch((2.65, 0.52), 3.6, 0.28, boxstyle="round,pad=0.06",
                                     facecolor='#FFFFFF', edgecolor='#CBD5E1', linewidth=1.0)
     ax.add_patch(out_tf)
-    ax.text(4.45, 0.66, "Layer Output:  x_t^(l)  ->  Layer (l+1)", ha='center', va='center',
+    ax.text(4.45, 0.66, r"Layer Output: $x_t^{(l)} \to \mathrm{Layer}\;(l+1)$", ha='center', va='center',
             fontsize=8.5, fontweight='bold', color=c_text_body)
 
     # Bottom Tag
-    ax.text(4.45, 0.22, "Characteristics: O(T) Memory Growth | Attention Softmax Prevents Forgetting",
+    ax.text(4.45, 0.22, r"Characteristics: $\mathcal{O}(T)$ Memory Growth | Attention Softmax Prevents Forgetting",
             ha='center', va='center', fontsize=8.0, fontweight='bold', color=c_tf_kv_border)
 
     # -------------------------------------------------------------
-    # RIGHT PANEL: NeuroWorld-LM Layer l with CAFE
+    # RIGHT PANEL: NeuroWorld-LM / Hokie Layer l with CAFE
     # -------------------------------------------------------------
     # Outer Layer Boundary Box
     nw_outer = patches.FancyBboxPatch((8.3, 0.45), 6.9, 6.1, boxstyle="round,pad=0.15",
@@ -184,40 +184,40 @@ def build_clean_white_diagram():
     ax.add_patch(nw_outer)
 
     # Stack Bracket: Layer (l)
-    ax.text(8.65, 3.5, "Stacked  x L Layers", ha='center', va='center', rotation=90,
+    ax.text(8.65, 3.5, r"Stacked $\times L$ Layers", ha='center', va='center', rotation=90,
             fontsize=9.5, fontweight='bold', color=c_nw_border)
     ax.plot([8.85, 8.85], [1.0, 6.0], color='#BAE6FD', lw=1.2, linestyle='--')
 
     # Panel Title
-    ax.text(11.95, 6.25, "NeuroWorld-LM World Model Layer (l)", ha='center', va='center',
+    ax.text(11.95, 6.25, r"Hokie-LM World Model Layer ($l$)", ha='center', va='center',
             fontsize=12.5, fontweight='bold', color=c_nw_border)
     ax.text(11.95, 6.02, "Constant-Memory Dual-State with Cognitive Active Forgetting Engine", ha='center', va='center',
             fontsize=8.5, color=c_text_muted)
 
     # Recurrent Dual-State Inputs (Top Left/Right)
-    h_in = patches.FancyBboxPatch((9.15, 5.48), 2.2, 0.35, boxstyle="round,pad=0.06",
+    h_in = patches.FancyBboxPatch((9.15, 5.48), 2.3, 0.35, boxstyle="round,pad=0.06",
                                   facecolor=c_ssm_bg, edgecolor=c_ssm_border, linewidth=1.0)
     ax.add_patch(h_in)
-    ax.text(10.25, 5.655, "h_{t-1}^(l): 17KB SSM State", ha='center', va='center',
+    ax.text(10.3, 5.655, r"$h_{t-1}^{(l)}$: 17.0 KB SSM State", ha='center', va='center',
             fontsize=7.8, fontweight='bold', color=c_ssm_border)
 
-    z_in = patches.FancyBboxPatch((12.6, 5.48), 2.2, 0.35, boxstyle="round,pad=0.06",
+    z_in = patches.FancyBboxPatch((12.5, 5.48), 2.3, 0.35, boxstyle="round,pad=0.06",
                                   facecolor=c_rssm_bg, edgecolor=c_rssm_border, linewidth=1.0)
     ax.add_patch(z_in)
-    ax.text(13.7, 5.655, "z_{t-1}^(l): Latent Belief", ha='center', va='center',
+    ax.text(13.65, 5.655, r"$z_{t-1}^{(l)}$: Latent Belief", ha='center', va='center',
             fontsize=7.8, fontweight='bold', color=c_rssm_border)
 
     # Layer Input x_t^(l-1) (Top Center)
     inp_nw = patches.FancyBboxPatch((10.7, 5.08), 2.5, 0.28, boxstyle="round,pad=0.04",
                                     facecolor='#FFFFFF', edgecolor='#CBD5E1', linewidth=0.8)
     ax.add_patch(inp_nw)
-    ax.text(11.95, 5.22, "Input:  x_t^(l-1)", ha='center', va='center',
+    ax.text(11.95, 5.22, r"Input: $x_t^{(l-1)}$", ha='center', va='center',
             fontsize=8.0, fontweight='bold', color=c_text_body)
 
     # Arrows to CAFE Core
-    ax.annotate("", xy=(10.25, 4.65), xytext=(10.25, 5.48), arrowprops=dict(arrowstyle="->", color=c_ssm_border, lw=1.2))
+    ax.annotate("", xy=(10.3, 4.65), xytext=(10.3, 5.48), arrowprops=dict(arrowstyle="->", color=c_ssm_border, lw=1.2))
     ax.annotate("", xy=(11.95, 4.65), xytext=(11.95, 5.08), arrowprops=dict(arrowstyle="->", color=c_arrow, lw=1.2))
-    ax.annotate("", xy=(13.7, 4.65), xytext=(13.7, 5.48), arrowprops=dict(arrowstyle="->", color=c_rssm_border, lw=1.2))
+    ax.annotate("", xy=(13.65, 4.65), xytext=(13.65, 5.48), arrowprops=dict(arrowstyle="->", color=c_rssm_border, lw=1.2))
 
     # MODULE 1: Cognitive Active Forgetting Engine (CAFE)
     cafe_box = patches.FancyBboxPatch((9.15, 3.5), 5.7, 1.15, boxstyle="round,pad=0.08",
@@ -226,15 +226,15 @@ def build_clean_white_diagram():
     ax.text(12.0, 4.45, "[1] Cognitive Active Forgetting Engine (CAFE)", ha='center', va='center',
             fontsize=9.5, fontweight='bold', color=c_cafe_border)
 
-    ax.text(10.5, 4.12, "Surprise: γ_t = D_KL(q || p)", ha='center', va='center', fontsize=7.6, color=c_text_dark,
+    ax.text(10.5, 4.12, r"Surprise: $\gamma_t = \mathcal{D}_{\mathrm{KL}}(q \parallel p)$", ha='center', va='center', fontsize=7.6, color=c_text_dark,
             bbox=dict(boxstyle="round,pad=0.15", facecolor='#FFFFFF', edgecolor=c_cafe_border))
-    ax.text(13.5, 4.12, "Eviction: E_t ⊙ h_{t-1}", ha='center', va='center', fontsize=7.6, color='#991B1B',
+    ax.text(13.5, 4.12, r"Eviction: $E_t \odot h_{t-1}$", ha='center', va='center', fontsize=7.6, color='#991B1B',
             bbox=dict(boxstyle="round,pad=0.15", facecolor='#FEE2E2', edgecolor='#EF4444'))
 
     null_banner = patches.FancyBboxPatch((9.35, 3.62), 5.3, 0.32, boxstyle="round,pad=0.04",
                                          facecolor='#CCFBF1', edgecolor='#0D9488', linewidth=0.8)
     ax.add_patch(null_banner)
-    ax.text(12.0, 3.78, "Subspace Nullifier:  P_perp = I - sum(q_k q_k^T)  ==>  0.00% Zero-Leakage",
+    ax.text(12.0, 3.78, r"Subspace Nullifier: $P_\perp = I - \sum_k q_k q_k^\top \Rightarrow 0.00\%$ Zero-Leakage",
             ha='center', va='center', fontsize=7.4, fontweight='bold', color='#0F766E')
 
     # Arrow to State Core
@@ -250,15 +250,15 @@ def build_clean_white_diagram():
     ssm_sub = patches.FancyBboxPatch((9.35, 2.38), 5.3, 0.45, boxstyle="round,pad=0.06",
                                      facecolor='#FFFFFF', edgecolor='#7DD3FC', linewidth=0.8)
     ax.add_patch(ssm_sub)
-    ax.text(12.0, 2.65, "Continuous SSM:  h_t^(l) = P_perp [ A_t h_{t-1} - E_t ⊙ h_{t-1} ] + B~_t x_t",
+    ax.text(12.0, 2.65, r"Continuous SSM: $h_t^{(l)} = P_\perp [ \bar{A}_t h_{t-1} - E_t \odot h_{t-1} ] + \bar{B}_t x_t$",
             ha='center', va='center', fontsize=7.4, fontweight='bold', color='#0369A1')
-    ax.text(12.0, 2.48, "State Buffer: Strictly Constant 17.0 KB  (1,927x Memory Reduction over KV Cache)",
+    ax.text(12.0, 2.48, r"State Buffer: Strictly Constant 17.0 KB  (963.8$\times$ Memory Reduction over KV Cache)",
             ha='center', va='center', fontsize=7.0, color='#D97706')
 
     rssm_sub = patches.FancyBboxPatch((9.35, 1.9), 5.3, 0.4, boxstyle="round,pad=0.06",
                                       facecolor='#FAF5FF', edgecolor='#C084FC', linewidth=0.8)
     ax.add_patch(rssm_sub)
-    ax.text(12.0, 2.15, "Categorical Latents:  z_t^(l) ~ q_phi(z_t | h_t, x_t)  vs  p_theta(z_t | h_t)",
+    ax.text(12.0, 2.15, r"Categorical Latents: $z_t^{(l)} \sim q_\phi(z_t \mid h_t, x_t) \text{ vs } p_\theta(z_t \mid h_t)$",
             ha='center', va='center', fontsize=7.4, fontweight='bold', color='#6B21A8')
     ax.text(12.0, 1.98, "Stochastic Multi-Hypothesis World Beliefs (Zero Collapse)",
             ha='center', va='center', fontsize=6.8, color=c_text_muted)
@@ -272,7 +272,7 @@ def build_clean_white_diagram():
     ax.add_patch(rollout_box)
     ax.text(12.0, 1.34, "[3] Zero-Token Latent Rollout Planner (Mental Simulation)", ha='center', va='center',
             fontsize=8.5, fontweight='bold', color='#15803D')
-    ax.text(12.0, 1.18, "Value-Head Guided Rollout directly in (h, z)  |  12x FLOPs Saved (Zero Token Overhead)",
+    ax.text(12.0, 1.18, r"Value-Head Guided Rollout directly in $(h, z)$  |  12$\times$ FLOPs Saved (Zero Token Overhead)",
             ha='center', va='center', fontsize=7.0, color=c_text_body)
 
     # Arrow to Output
@@ -282,21 +282,18 @@ def build_clean_white_diagram():
     out_nw = patches.FancyBboxPatch((10.2, 0.52), 3.6, 0.28, boxstyle="round,pad=0.06",
                                     facecolor='#FFFFFF', edgecolor='#CBD5E1', linewidth=1.0)
     ax.add_patch(out_nw)
-    ax.text(12.0, 0.66, "Layer Output:  x_t^(l)  ->  Layer (l+1)", ha='center', va='center',
+    ax.text(12.0, 0.66, r"Layer Output: $x_t^{(l)} \to \mathrm{Layer}\;(l+1)$", ha='center', va='center',
             fontsize=8.5, fontweight='bold', color=c_text_body)
 
     # Bottom Tag
-    ax.text(11.95, 0.22, "Characteristics: O(1) Constant 17KB Memory | Subspace Projection P_perp | Latent Rollout",
+    ax.text(11.95, 0.22, r"Characteristics: $\mathcal{O}(1)$ Constant 17.0 KB Memory | Subspace Projection $P_\perp$ | Latent Rollout",
             ha='center', va='center', fontsize=8.0, fontweight='bold', color='#0369A1')
 
     # Save to all figure directories
-    out_file = "/home/eun/neuroworld_lm/figures/fig16_arch_layer_comparison.png"
-    plt.savefig(out_file, bbox_inches='tight', facecolor='#FFFFFF', edgecolor='none', dpi=300)
+    for d in ["figures", "paper/figures", "presentation/figures"]:
+        os.makedirs(d, exist_ok=True)
+        plt.savefig(os.path.join(d, "fig16_arch_layer_comparison.png"), bbox_inches='tight', facecolor='#FFFFFF', edgecolor='none', dpi=300)
     plt.close()
-
-    # Fast file copies
-    shutil.copyfile(out_file, "/home/eun/neuroworld_lm/paper/figures/fig16_arch_layer_comparison.png")
-    shutil.copyfile(out_file, "/home/eun/neuroworld_lm/presentation/figures/fig16_arch_layer_comparison.png")
     print("[SUCCESS] Pristine white architecture diagram generated and deployed!")
 
 if __name__ == "__main__":
