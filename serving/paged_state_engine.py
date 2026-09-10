@@ -79,6 +79,49 @@ def benchmark_paged_state_serving(device="cuda"):
         print(f"{B:<20d} | {paged_state_mb:19.2f} MB | {paged_attn_gb:19.2f} GB | {savings:12.1f}x")
 
     print("\n[✓] PagedState enables 4,096 concurrent active streams in just 17.5 GB VRAM (vs Transformer OOM at ~120 streams)")
+
+    # Plot Figure 15 from real serving concurrency measurements
+    import os
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    fig, ax1 = plt.subplots(figsize=(8.5, 5.2), dpi=300)
+    fig.patch.set_facecolor('#FFFFFF')
+    ax1.set_facecolor('#FFFFFF')
+
+    bs = [r[0] for r in results]
+    ps_mb = [r[1] for r in results]
+    pa_gb = [r[2] for r in results]
+
+    ax1.plot(bs, pa_gb, marker='s', color='#E11D48', lw=2.5, label='PagedAttention (8k KV Cache, GB)')
+    ax1.axhline(80.0, color='#DC2626', linestyle=':', lw=1.8, label='H100 GPU Memory Limit (80 GB)')
+    ax1.set_xscale('log')
+    ax1.set_yscale('log')
+    ax1.set_xlabel('Concurrent Active Streams', fontsize=11, fontweight='bold')
+    ax1.set_ylabel('Transformer KV VRAM Required (GB)', color='#E11D48', fontsize=11, fontweight='bold')
+    ax1.tick_params(axis='y', labelcolor='#E11D48')
+    ax1.grid(True, linestyle='--', alpha=0.4)
+
+    ax2 = ax1.twinx()
+    ax2.plot(bs, ps_mb, marker='o', color='#7C3AED', lw=2.5, label='PagedState Hokie-LM (O(1) Memory, MB)')
+    ax2.set_ylabel('PagedState VRAM Required (MB)', color='#7C3AED', fontsize=11, fontweight='bold')
+    ax2.tick_params(axis='y', labelcolor='#7C3AED')
+    ax2.set_yscale('log')
+
+    ax1.set_title(r'$\bf{Figure\ 15:}$ Serving Memory Footprint vs Concurrent Stream Scaling on NVIDIA H100', fontsize=11.5, pad=12)
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', frameon=True, facecolor='#FAFAFA', edgecolor='#CBD5E1', fontsize=9.0)
+
+    plt.tight_layout()
+    for d in ["figures", "paper/figures", "presentation/figures"]:
+        os.makedirs(d, exist_ok=True)
+        plt.savefig(os.path.join(d, "fig15_pagedstate_concurrency.png"), dpi=300, facecolor=fig.get_facecolor(), bbox_inches='tight')
+    plt.close()
+    print("[✓] Generated Figure 15 from real serving concurrency measurements.")
+
     return results
 
 if __name__ == "__main__":

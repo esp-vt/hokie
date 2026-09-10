@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import math
+import random
 import numpy as np
 import torch
 import torch.nn as nn
@@ -116,10 +117,31 @@ def evaluate_active_forgetting_benchmarks(device_str="cuda"):
     # --------------------------------------------------------------------------
     # [Task 3] Long-Horizon 100k Token State Capacity Saturation
     # --------------------------------------------------------------------------
-    print("\n[3/3] Profiling State Saturation Index up to 100,000 Tokens...")
+    print("\n[3/3] Profiling State Saturation Index up to 100,000 Tokens on GPU...")
     horizons = [1000, 5000, 20000, 50000, 100000]
-    sat_passive = [1.2, 3.8, 8.9, 14.5, 21.2]
-    sat_active = [1.1, 1.3, 1.4, 1.4, 1.5] # Stable bounded saturation
+    sat_passive = []
+    sat_active = []
+
+    s_pass = torch.zeros(1, 2 * d_model, d_state, device=device)
+    s_act = torch.zeros(1, 2 * d_model, d_state, device=device)
+    cur_toks = 0
+
+    for target_h in horizons:
+        needed = target_h - cur_toks
+        for chunk_step in range(0, needed, 200):
+            c_len = min(200, needed - chunk_step)
+            for _ in range(c_len):
+                x_in = torch.randn(1, d_model, device=device)
+                is_bound = (random.random() < 0.02)
+                gamma = 3.0 if is_bound else 0.1
+                _, s_pass, _ = asfe_cell.forward_step(x_in, s_pass, surprise=None)
+                _, s_act, _ = asfe_cell.forward_step(x_in, s_act, surprise=gamma)
+        cur_toks = target_h
+        norm_p = round(torch.norm(s_pass).item() / math.sqrt(2 * d_model * d_state), 2)
+        norm_a = round(torch.norm(s_act).item() / math.sqrt(2 * d_model * d_state), 2)
+        sat_passive.append(norm_p)
+        sat_active.append(norm_a)
+        print(f"  • Horizon {target_h:6d} Tokens | Passive Norm: {norm_p:5.2f} | Active Norm: {norm_a:5.2f}")
 
     # Generate Publication Figure 12
     fig_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "figures"))

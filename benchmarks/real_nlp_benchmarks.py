@@ -247,5 +247,43 @@ def main():
         f.write(f"| **DailyDialog** | Multi-Turn Natural Dialogue Tracking | PPL: {dd_ppl:.2f} | PPL: {dd_ppl:.2f} | **17.0 KB $O(1)$ Memory** |\n")
     print("\n[✓] Saved real benchmark results to REAL_NLP_BENCHMARKS.md")
 
+    # Plot Figure 14 from real benchmark measurements
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(8, 5), dpi=300)
+    fig.patch.set_facecolor('#FFFFFF')
+    ax.set_facecolor('#FFFFFF')
+
+    bench_names = ['ARC-Challenge\n(Grade-School Science)', 'OpenBookQA\n(Scientific Facts)']
+    x = np.arange(len(bench_names))
+    width = 0.35
+
+    bars1 = ax.bar(x - width/2, [arc_dir, obqa_dir], width, label='Direct Autoregression (K=0)', color='#94A3B8', edgecolor='#475569')
+    bars2 = ax.bar(x + width/2, [arc_tht, obqa_tht], width, label='Zero-Token Latent Thought (K=4)', color='#7C3AED', edgecolor='#4C1D95')
+
+    ax.set_ylabel('Accuracy (%)', fontsize=11, fontweight='bold')
+    ax.set_title(r'$\bf{Figure\ 14:}$ Real NLP Benchmark Performance on HuggingFace Evaluation', fontsize=12, pad=12)
+    ax.set_xticks(x)
+    ax.set_xticklabels(bench_names, fontsize=10, fontweight='bold')
+    ax.set_ylim(0, 100)
+    ax.grid(axis='y', linestyle='--', alpha=0.4)
+    ax.legend(frameon=True, facecolor='#FAFAFA', edgecolor='#CBD5E1', fontsize=9.5)
+
+    for bar in bars1:
+        y = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, y + 1.5, f"{y:.1f}%", ha='center', va='bottom', fontsize=9.5, fontweight='bold')
+    for bar in bars2:
+        y = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, y + 1.5, f"{y:.1f}%", ha='center', va='bottom', fontsize=9.5, fontweight='bold')
+
+    plt.tight_layout()
+    for d in ["figures", "paper/figures", "presentation/figures"]:
+        os.makedirs(d, exist_ok=True)
+        plt.savefig(os.path.join(d, "fig14_real_nlp_benchmarks.png"), dpi=300, facecolor=fig.get_facecolor(), bbox_inches='tight')
+    plt.close()
+    print("[✓] Generated Figure 14 from real benchmark measurements.")
+
 if __name__ == "__main__":
     main()
