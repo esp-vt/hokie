@@ -1,0 +1,19 @@
+\section{Related Work}
+\label{sec:related_work}
+
+\paragraph{State Space Models and Modern Linear RNNs.}
+Recurrent architectures with linear-time sequence complexity have experienced a resurgence as alternatives to Transformers.
+Structured State Space Models (S4) \citep{gu2022efficiently} parameterized continuous-time linear differential equations with low-rank/diagonal structures, excelling on the Long-Range Arena.
+Building upon this, Mamba \citep{gu2023mamba} introduced time-varying selective parameters ($\mathbf{B}_t, \mathbf{C}_t, \Delta_t$), enabling content-based addressing while preserving $\mathcal{O}(1)$ recurrent memory during inference.
+Subsequent advances including RWKV \citep{peng2023rwkv}, xLSTM \citep{beck2024xlstm}, and Griffin \citep{de2024griffin} proposed matrix memory updates and gated linear recurrences.
+However, existing SSMs remain fundamentally deterministic transducers that emit tokens autoregressively without stochastic world simulation capabilities.
+
+\paragraph{Generative World Models and Model-Based Planning.}
+In reinforcement learning and robotics, Recurrent State-Space Models (RSSM) such as Dreamer \citep{hafner2023mastering} model environments via dual deterministic and stochastic latent spaces, performing imagination and policy optimization entirely within latent trajectories.
+While world models have proven sample-efficient for continuous control and visual domains, adapting RSSM dynamics into discrete autoregressive language modeling backbones remains largely unexplored.
+NeuroWorld-LM fills this void by demonstrating that language tokens can be treated as environmental observations and actions, enabling Zero-Token latent thought simulation.
+
+\paragraph{Deliberative Reasoning and Chain-of-Thought.}
+To solve complex multi-step reasoning tasks, models typically generate explicit intermediate tokens (Chain-of-Thought \citep{wei2022chain}, Tree-of-Thoughts \citep{yao2023tree}, RAP \citep{hao2023reasoning}).
+However, verbalizing every intermediate hypothesis in text space incurs severe computational latency and quadratic memory bottlenecks.
+NeuroWorld-LM introduces Zero-Token Latent Rollout Planning, executing multi-step hypothesis exploration directly in state space, bypassing vocabulary projection overhead on intermediate steps.

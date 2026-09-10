@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Checkpoints and large artifacts
+checkpoints/*.pt
+checkpoints/*.bin
+*.pth
+*.qcow2
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE & OS files
+.DS_Store
+.vscode/
+.idea/
+
+# LaTeX build auxiliary files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.synctex.gz

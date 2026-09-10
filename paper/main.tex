@@ -1,0 +1,47 @@
+\documentclass[journal,10pt,twocolumn]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\graphicspath{{figures/}{../figures/}}
+\usepackage{multirow}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{xcolor}
+
+% Ensure compatibility with natbib citation commands in IEEE format
+\providecommand{\citep}[1]{\cite{#1}}
+\providecommand{\citet}[1]{\cite{#1}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+
+\title{Why Verbalize Thoughts? Latent World Models Enable Zero-Token Reasoning with Constant-Memory State Space Duality}
+
+\author{
+\IEEEauthorblockN{Eun-Lab Research Team} \\
+\IEEEauthorblockA{\textit{Department of Computer Science}, Virginia Tech, Blacksburg, VA, USA \\
+\textit{Email:} \{eun\}@vt.edu}
+}
+
+\begin{document}
+
+\maketitle
+
+\input{sections/00_abstract}
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_methodology}
+\input{sections/04_theoretical_analysis}
+\input{sections/05_experiments}
+\input{sections/06_discussion}
+\input{sections/06_conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\input{sections/07_appendix}
+
+\end{document}

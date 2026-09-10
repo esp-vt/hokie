@@ -1,0 +1,8 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+In this paper, we introduced \textbf{NeuroWorld-LM}, a foundation architecture that re-imagines language modeling as a generative world model with dual continuous-discrete state space dynamics.
+By combining selective state-space memory with discrete categorical latent beliefs, NeuroWorld-LM eliminates the $\mathcal{O}(T)$ KV cache memory wall, achieving constant $17\text{ KB}$ inference memory across 32k+ token horizons.
+Furthermore, by introducing the Zero-Token Latent Rollout Planner with surprise-driven gating, the model performs internal mental simulations in latent space, achieving substantial accuracy jumps on multi-hop deductive logic and GSM8K mathematical reasoning while reducing computational FLOPs by up to $12\times$ compared to Verbal Chain-of-Thought.
+Our theoretical analysis guarantees the global stability of ungrounded deep rollouts and proves online regret minimization.
+We believe NeuroWorld-LM opens a promising avenue toward scalable, constant-memory, and deliberative language intelligence.

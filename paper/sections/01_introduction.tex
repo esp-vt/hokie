@@ -1,0 +1,34 @@
+\section{Introduction}
+\label{sec:intro}
+
+Modern Large Language Models (LLMs) predominantly rely on the Transformer architecture \citep{vaswani2017attention}, where self-attention mechanism computes pairwise token interactions across time.
+While empirically powerful, this formulation incurs three critical structural drawbacks:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{The $\mathcal{O}(T)$ Memory Wall:} Autoregressive inference requires maintaining a Key-Value (KV) cache proportional to sequence length $T$ across all layers. In multi-turn dialogue agents and long-document reasoning (32k+ tokens), the KV cache consumes tens of gigabytes of VRAM, dominating memory bandwidth and stalling serving throughput.
+    \item \textbf{The Inability to Forget and Catastrophic Distraction:} Softmax attention computes pairwise interactions with strictly positive weights $\exp(QK^T/\sqrt{d}) > 0$, rendering Transformers incapable of actively purging obsolete variable states, closed scratchpads, or cross-topic noise. As sequence length expands, accumulating distractors degrade memory Signal-to-Noise Ratio (SNR), inducing hallucination and preventing zero-shot privacy unlearning.
+    \item \textbf{The Verbalization Inefficiency in Reasoning:} To solve complex mathematical, symbolic, and planning problems, recent paradigm shifts (e.g., Chain-of-Thought \citep{wei2022chain}, o1-style deliberative reasoning) require generating hundreds to thousands of intermediate ``thought tokens'' in text space. Generating verbose tokens through the full vocabulary projection ($d_{model} \times V$) incurs massive computational latency and token cost.
+\end{enumerate}
+
+In contrast, human cognitive reasoning rarely verbalizes every intermediate computational branch into spoken language.
+Instead, the brain performs \textit{internal mental simulation} within an abstract predictive model of the world \citep{hafner2023mastering,friston2010free} before formulating a refined linguistic utterance, actively pruning noise and forgetting irrelevant surface details to preserve semantic invariants.
+
+Recent advances in State Space Models (SSMs) such as S4 \citep{gu2022efficiently} and Mamba \citep{gu2023mamba} have demonstrated that recurrent linear-time formulations can match Transformer perplexity while maintaining $\mathcal{O}(1)$ inference memory.
+However, existing SSMs operate with purely deterministic single-state trajectories and passive exponential decay, making them incapable of modeling stochastic multi-hypothesis branches or conducting subspace-selective memory eviction.
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig1_surprise_heatmap.png}
+    \caption{\textbf{Surprise-Driven Dynamic Memory Gating in NeuroWorld-LM.} The surprise metric $\gamma_t = \mathcal{D}_{\mathrm{KL}}(q \parallel p)$ measures information novelty, automatically spiking at critical entities, values, and query tokens, while suppressing memory churn on routine stopwords.}
+    \label{fig:surprise_heatmap}
+\end{figure*}
+
+To bridge this fundamental gap, we introduce \textbf{NeuroWorld-LM}, a unified language model architecture that marries Recurrent State-Space World Models (RSSM) with selective state-space duality and cognitive active forgetting.
+Our primary contributions are summarized as follows:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Dual-Loop State Dynamics:} We formulate sequence modeling via deterministic continuous-time SSM context memory ($h_t$) combined with discrete categorical latent beliefs ($z_t$). This resolves the information bottleneck of linear RNNs while preserving strictly $\mathcal{O}(1)$ inference memory.
+    \item \textbf{Cognitive Active Forgetting Engine (CAFE):} We introduce a 4-tier intelligent forgetting architecture featuring multi-scale channel lifetimes, decoupled storage/eviction dual-gating, and semantic subspace nullification ($\mathbf{P}_{\perp}$), solving the context rot and distractor interference problems of Transformers with provable zero leakage.
+    \item \textbf{Zero-Token Latent Rollout Planner:} We introduce an internal mental simulation engine that rolls out $K$-step latent trajectories $(h_{t+k}, z_{t+k})$ conditioned on learned Value scoring, jumping directly to target conclusions without generating redundant intermediate tokens.
+    \item \textbf{Surprise-Driven Gating & Chunked Parallel Scan:} We employ variational KL divergence as an analytical surprise metric ($\gamma_t$), dynamically regulating memory persistence and achieving $8.69\times$ training acceleration via State-Space Duality (SSD) chunked scans.
+    \item \textbf{Comprehensive Empirical Validation:} Across MQAR 16k, multi-hop PrOntoQA, GSM8K math reasoning, 100k-token active memory purging, and H100 GPU concurrency, NeuroWorld-LM establishes a strictly superior accuracy and efficiency frontier over Transformers.
+\end{itemize}
+
