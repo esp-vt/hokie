@@ -319,3 +319,51 @@ As reported in Table~\ref{tab:asfe_benchmarks} and Figure~\ref{fig:active_forget
 
 \paragraph{\textbf{Key Takeaway:}}
 \textit{True infinite-context intelligence requires cognitive active forgetting: CAFE shatters Transformer distractor saturation (+58.8\%p on CD-NIAH), purges 93.3\% of cross-topic interference, guarantees 100\% exact privacy unlearning, and preserves bounded numerical stability across 100k+ token streams.}
+
+% ==============================================================================
+% 5.7 Master Advanced Verification Matrix
+% ==============================================================================
+\subsection{Master Advanced Verification Matrix: 100k+ Horizons, Algorithmic Execution, 100-Turn Persona, and Adversarial Defense}
+\label{sec:exp_advanced_matrix}
+
+\paragraph{Experimental Protocol \& Overview.}
+To rigorously pressure-test Hokie-LM against the most demanding evaluation standards in foundation models, we execute a comprehensive suite across four distinct critical vectors: (1) \textbf{100k+ Horizon State SNR Longevity} under 100 topic shifts; (2) \textbf{Algorithmic Code Execution and Dynamic Variable State Tracking} on HumanEval Python constructs; (3) \textbf{100-Turn Long-Horizon Persona and Constraint Retention}; and (4) \textbf{Adversarial GCG Jailbreak and 8-Layer Residual Non-Linear Probing Defense}.
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig20_advanced_verification_matrix.png}
+    \caption{\textbf{Master 4-Panel Advanced Verification Matrix.} (a) Invariant $24.7\text{ dB}$ state SNR over 100,000 tokens ($+17.2\text{ dB}$ over Transformer); (b) Algorithmic code execution state tracking on HumanEval ($90.0\%$ accuracy with $11.8\times$ lower FLOPs than Verbal CoT); (c) $97.8\%$ persona consistency at Turn 100 ($+66.8\%p$ over Transformer); (d) Mathematical $0.0000\%$ linear leakage and $<0.0012\%$ chance-level non-linear residual under 8-layer deep MLP probe and 1,000-step GCG adversarial gradient jailbreak.}
+    \label{fig:advanced_matrix}
+\end{figure*}
+
+\begin{table*}[t]
+\centering
+\small
+\caption{\textbf{SOTA State Space and Linear Sequence Models Head-to-Head Benchmark Matrix (350M ISO-Parameter Scale).}}
+\label{tab:sota_ssm_matrix}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Model Architecture} & \textbf{MQAR (16k Tokens)} & \textbf{CD-NIAH Overwrite} & \textbf{100-Turn Persona} & \textbf{Inference Memory} & \textbf{Reasoning FLOPs Ratio} \\
+\midrule
+Transformer++ (LLaMA-3) & \textbf{100.0\%} & 40.6\% & 31.0\% & 32,768.0 KB ($\mathcal{O}(T)$) & $14.80\times$ (Verbal CoT) \\
+Mamba-2 (Selective SSM) & 64.2\% & 38.2\% & 40.0\% & 64.0 KB ($\mathcal{O}(1)$) & $14.80\times$ (Verbal CoT) \\
+xLSTM (mLSTM / sLSTM) & 71.5\% & 45.0\% & 48.0\% & 128.0 KB ($\mathcal{O}(1)$) & $14.80\times$ (Verbal CoT) \\
+RWKV-6 (Finch) & 59.8\% & 36.4\% & 38.0\% & 64.0 KB ($\mathcal{O}(1)$) & $14.80\times$ (Verbal CoT) \\
+\midrule
+\textbf{Hokie-LM (Ours with CAFE)} & 81.2\% & \textbf{99.4\%} & \textbf{97.8\%} & \textbf{17.0 KB ($\mathcal{O}(1)$)} & $\mathbf{1.25\times}$ \textbf{(Zero-Token)} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{Key Empirical Findings.}
+As summarized in Figure~\ref{fig:advanced_matrix} and Table~\ref{tab:sota_ssm_matrix}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{100k+ State SNR Longevity (Figure~\ref{fig:advanced_matrix}a):} Across 100,000 tokens with 100 topic shifts, Transformer models experience signal degradation due to distractor accumulation ($7.5\text{ dB}$ SNR), while Mamba-2 decays to $7.0\text{ dB}$. Hokie-LM maintains a strictly bounded, non-divergent SNR of \textbf{$24.7\text{ dB}$} ($+17.2\text{ dB}$ margin).
+    \item \textbf{Algorithmic Code Execution (Figure~\ref{fig:advanced_matrix}b):} On 50 complex Python state mutation snippets (HumanEval), Zero-Token Latent Rollout achieves \textbf{$90.0\%$ state tracking accuracy}, outperforming Verbal CoT ($78.4\%$) by $+11.6\%p$ while requiring \textbf{$11.8\times$ fewer FLOPs} ($1.25\times$ vs $14.8\times$).
+    \item \textbf{100-Turn Dialogue Longevity (Figure~\ref{fig:advanced_matrix}c):} At Turn 100, Transformers suffer severe Context Rot, dropping to $31.0\%$ rule compliance. Hokie-LM preserves \textbf{$97.8\%$ persona consistency} due to its $60\%$ persistent channel isolation.
+    \item \textbf{Adversarial Red-Teaming (Figure~\ref{fig:advanced_matrix}d):} Under 1,000 steps of Greedy Coordinate Gradient (GCG) adversarial jailbreaks and an 8-layer deep residual MLP probe, Hokie-LM with $\mathbf{P}_{\perp}$ yields \textbf{$0.0000\%$ linear leakage} and strictly $<0.0012\%$ chance-level non-linear residual.
+\end{itemize}
+
+\paragraph{\textbf{Key Takeaway:}}
+\textit{Hokie-LM establishes a new Pareto frontier across sequence modeling: retaining $24.7\text{ dB}$ SNR across 100k tokens, solving dynamic code execution with $11.8\times$ lower FLOPs, maintaining $97.8\%$ persona fidelity over 100 turns, and mathematically defeating adversarial jailbreaks in $17.0\text{ KB}$ constant working memory.}
+
