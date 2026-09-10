@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 """
-Publication-Grade Architecture Diagram Generator
+Publication-Grade Architecture Diagram Generator (Mathematical Edition)
 Hokie-LM: State Space Dynamics & Cognitive Active Forgetting (CAFE) Dataflow
-Outputs high-res publication figures to figures/ and paper/figures/
+Outputs high-res publication figures to figures/, paper/figures/, and presentation/figures/
 """
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import shutil
 import os
 
 def create_diagram():
-    # 16:9 Widescreen Aspect Ratio at 300 DPI
-    fig, ax = plt.subplots(figsize=(16, 10.5), dpi=300)
+    # 16:11 Aspect Ratio at 300 DPI for crystal clear publication quality
+    fig, ax = plt.subplots(figsize=(16, 11.2), dpi=300)
     fig.patch.set_facecolor('#FFFFFF')
     ax.set_facecolor('#FFFFFF')
     ax.set_xlim(0, 16)
-    ax.set_ylim(0, 10.5)
+    ax.set_ylim(0, 11.2)
     ax.axis('off')
 
     # Minimalist Academic Color Palette
@@ -55,188 +54,190 @@ def create_diagram():
     # -------------------------------------------------------------------------
     # HEADER SECTION
     # -------------------------------------------------------------------------
-    ax.text(8.0, 10.05, "Hokie-LM: State Space Dynamics & Cognitive Active Forgetting (CAFE)", 
+    ax.text(8.0, 10.75, "Hokie-LM: State Space Dynamics & Cognitive Active Forgetting (CAFE)", 
             ha='center', va='center', fontsize=17, fontweight='bold', color=c_dark)
-    ax.text(8.0, 9.68, "Novelty-guided writing (γ_t), multi-scale channel eviction (Ω), and orthogonal nullification (P_⊥) in O(1) constant memory (17.0 KB)", 
+    ax.text(8.0, 10.38, r"Complete Mathematical Dataflow: Novelty Gating ($\gamma_t$), Multi-Scale Decay ($\Omega$), and Orthogonal Nullification ($P_\perp$)", 
             ha='center', va='center', fontsize=10.5, color=c_muted)
 
     # -------------------------------------------------------------------------
     # 1. TOP SECTION: INPUT TOKEN & COGNITIVE SURPRISE DETECTION
     # -------------------------------------------------------------------------
-    # Outer container for Input & Gating
-    box_top = patches.FancyBboxPatch((0.8, 7.35), 14.4, 2.05, boxstyle="round,pad=0.12",
+    box_top = patches.FancyBboxPatch((0.8, 7.85), 14.4, 2.25, boxstyle="round,pad=0.12",
                                      facecolor='#FAFAFA', edgecolor='#E2E8F0', linewidth=1.2)
     ax.add_patch(box_top)
-    ax.text(1.2, 9.15, "Phase 1: Input Perception & Cognitive Gating", fontsize=11, fontweight='bold', color=c_dark)
+    ax.text(1.2, 9.85, "Phase 1: Input Perception & Cognitive Gating Engine", fontsize=11, fontweight='bold', color=c_dark)
 
     # Input Token Box
-    inp_box = patches.FancyBboxPatch((1.2, 7.6), 2.8, 1.2, boxstyle="round,pad=0.08",
+    inp_box = patches.FancyBboxPatch((1.2, 8.1), 3.0, 1.45, boxstyle="round,pad=0.08",
                                      facecolor=c_input_bg, edgecolor=c_input_bdr, linewidth=1.4)
     ax.add_patch(inp_box)
-    ax.text(2.6, 8.4, "Input Token  x_t", ha='center', va='center', fontsize=11, fontweight='bold', color=c_dark)
-    ax.text(2.6, 8.05, "Dimension:  R^(B × d_model)", ha='center', va='center', fontsize=8.5, color=c_muted)
-    ax.text(2.6, 7.78, "Feature u = Linear(x_t)", ha='center', va='center', fontsize=8.5, color=c_body)
+    ax.text(2.7, 9.25, r"Input Token: $x_t$", ha='center', va='center', fontsize=11, fontweight='bold', color=c_dark)
+    ax.text(2.7, 8.85, r"$x_t \in \mathbb{R}^{B \times d_{\mathrm{model}}}$", ha='center', va='center', fontsize=9.2, color=c_muted)
+    ax.text(2.7, 8.48, r"$u = W_{\mathrm{in}} x_t \in \mathbb{R}^{d_{\mathrm{inner}}}$", ha='center', va='center', fontsize=9.2, fontweight='bold', color=c_body)
+    ax.text(2.7, 8.22, r"$\Delta t = \mathrm{softplus}(W_{\Delta} u)$", ha='center', va='center', fontsize=8.5, color='#0369A1')
 
-    # Arrow from Input to Surprise Gate & Direct Feature
-    ax.annotate("", xy=(4.6, 8.45), xytext=(4.0, 8.45), arrowprops=dict(arrowstyle="->", color=c_arrow, lw=1.5))
-    ax.annotate("", xy=(4.6, 7.75), xytext=(4.0, 7.75), arrowprops=dict(arrowstyle="->", color=c_arrow, lw=1.5))
+    # Arrow from Input to Surprise Gate & Feature
+    ax.annotate("", xy=(4.7, 9.15), xytext=(4.2, 9.15), arrowprops=dict(arrowstyle="->", color=c_arrow, lw=1.5))
+    ax.annotate("", xy=(4.7, 8.35), xytext=(4.2, 8.35), arrowprops=dict(arrowstyle="->", color=c_arrow, lw=1.5))
 
     # Surprise Gate Box
-    surp_box = patches.FancyBboxPatch((4.6, 7.95), 4.3, 1.0, boxstyle="round,pad=0.08",
+    surp_box = patches.FancyBboxPatch((4.7, 8.1), 4.3, 1.45, boxstyle="round,pad=0.08",
                                       facecolor=c_surprise_bg, edgecolor=c_surprise_bdr, linewidth=1.4)
     ax.add_patch(surp_box)
-    ax.text(6.75, 8.65, "Surprise Gate:  γ_t = D_KL( q_φ ∥ p_θ )", ha='center', va='center',
-            fontsize=10.0, fontweight='bold', color='#92400E')
-    ax.text(6.75, 8.22, "Measures informational novelty / unexpectedness", ha='center', va='center',
-            fontsize=8.5, color='#78350F')
+    ax.text(6.85, 9.25, r"Surprise Gate: $\gamma_t = \mathcal{D}_{\mathrm{KL}}(q_\phi \parallel p_\theta)$", ha='center', va='center',
+            fontsize=10.2, fontweight='bold', color='#92400E')
+    ax.text(6.85, 8.80, r"$\gamma_t = \sum_k q(z_k) \cdot [ \log q(z_k) - \log p(z_k) ]$", ha='center', va='center',
+            fontsize=8.8, fontweight='bold', color='#78350F')
+    ax.text(6.85, 8.35, "Measures informational novelty / unexpectedness", ha='center', va='center',
+            fontsize=7.8, color='#78350F')
 
     # Salience & Eviction Gates
     # Storage Salience Gate
-    sal_box = patches.FancyBboxPatch((9.5, 8.45), 5.3, 0.75, boxstyle="round,pad=0.06",
+    sal_box = patches.FancyBboxPatch((9.6, 8.95), 5.2, 0.85, boxstyle="round,pad=0.06",
                                      facecolor=c_gate_bg, edgecolor=c_gate_bdr, linewidth=1.2)
     ax.add_patch(sal_box)
-    ax.text(12.15, 8.95, "Storage Salience Gate:  G_write = σ( W_s · γ_t )", ha='center', va='center',
-            fontsize=9.2, fontweight='bold', color=c_dark)
-    ax.text(12.15, 8.65, "Amplify writing when novel:  u_eff = u ⊙ (1 + G_write)", ha='center', va='center',
-            fontsize=8.2, color='#0369A1')
+    ax.text(12.2, 9.55, r"Storage Salience Gate: $G_{\mathrm{write}} = \sigma(W_s \gamma_t)$", ha='center', va='center',
+            fontsize=9.5, fontweight='bold', color=c_dark)
+    ax.text(12.2, 9.20, r"$u_{\mathrm{eff}} = u \odot (1.0 + G_{\mathrm{write}}) \quad \rightarrow \text{Boost Write Up to } 2.0\times$", ha='center', va='center',
+            fontsize=8.2, fontweight='bold', color='#0369A1')
 
     # Eviction Gate
-    evict_box = patches.FancyBboxPatch((9.5, 7.5), 5.3, 0.75, boxstyle="round,pad=0.06",
+    evict_box = patches.FancyBboxPatch((9.6, 7.95), 5.2, 0.85, boxstyle="round,pad=0.06",
                                        facecolor=c_gate_bg, edgecolor=c_gate_bdr, linewidth=1.2)
     ax.add_patch(evict_box)
-    ax.text(12.15, 8.0, "Active Eviction Gate:  E_t = σ( W_e·u - β·γ_t + Bias )", ha='center', va='center',
-            fontsize=9.2, fontweight='bold', color=c_dark)
-    ax.text(12.15, 7.7, "High surprise suppresses eviction (-β·γ_t) to protect memory", ha='center', va='center',
-            fontsize=8.2, color='#B91C1C')
+    ax.text(12.2, 8.55, r"Active Eviction Gate: $E_t \in [0, 1]^{d_{\mathrm{inner}}}$", ha='center', va='center',
+            fontsize=9.5, fontweight='bold', color=c_dark)
+    ax.text(12.2, 8.20, r"$E_t = \sigma(W_e u - \beta \gamma_t + \mathrm{Bias}) \quad \rightarrow \text{Protects via } (-\beta \gamma_t)$", ha='center', va='center',
+            fontsize=8.0, fontweight='bold', color='#B91C1C')
 
     # Connect Surprise to Gates
-    ax.annotate("", xy=(9.5, 8.8), xytext=(8.9, 8.6), arrowprops=dict(arrowstyle="->", color=c_surprise_bdr, lw=1.3))
-    ax.annotate("", xy=(9.5, 7.85), xytext=(8.9, 8.3), arrowprops=dict(arrowstyle="->", color=c_surprise_bdr, lw=1.3))
+    ax.annotate("", xy=(9.6, 9.35), xytext=(9.0, 9.0), arrowprops=dict(arrowstyle="->", color=c_surprise_bdr, lw=1.3))
+    ax.annotate("", xy=(9.6, 8.40), xytext=(9.0, 8.7), arrowprops=dict(arrowstyle="->", color=c_surprise_bdr, lw=1.3))
 
     # -------------------------------------------------------------------------
     # 2. MIDDLE SECTION: MULTI-SCALE CHANNEL LIFETIMES (Ω PARTITIONING)
     # -------------------------------------------------------------------------
-    box_mid = patches.FancyBboxPatch((0.8, 4.45), 14.4, 2.65, boxstyle="round,pad=0.12",
+    box_mid = patches.FancyBboxPatch((0.8, 4.85), 14.4, 2.75, boxstyle="round,pad=0.12",
                                      facecolor='#FAFAFA', edgecolor='#E2E8F0', linewidth=1.2)
     ax.add_patch(box_mid)
-    ax.text(1.2, 6.85, "Phase 2: Multi-Scale Channel Lifetimes & Modulated Decay (Ω Multiplier)", 
+    ax.text(1.2, 7.35, r"Phase 2: Multi-Scale Channel Lifetimes & Modulated Decay ($\Omega$ Multiplier)", 
             fontsize=11, fontweight='bold', color=c_dark)
 
-    # Eviction Gate vector downward distribution
-    ax.annotate("Eviction Signal E_t", xy=(8.0, 6.45), xytext=(12.15, 7.5),
+    # Eviction Gate downward arrow
+    ax.annotate(r"Eviction Signal $E_t$", xy=(8.0, 6.95), xytext=(12.2, 7.95),
                 arrowprops=dict(arrowstyle="->", color='#B91C1C', lw=1.4, linestyle='--'),
                 fontsize=8.5, fontweight='bold', color='#B91C1C', ha='center')
 
     # 3 Channels Columns
     # Channel 1: Persistent
-    ch1_box = patches.FancyBboxPatch((1.2, 4.7), 4.2, 1.65, boxstyle="round,pad=0.08",
+    ch1_box = patches.FancyBboxPatch((1.2, 5.15), 4.2, 1.70, boxstyle="round,pad=0.08",
                                      facecolor=c_pers_bg, edgecolor=c_pers_bdr, linewidth=1.4)
     ax.add_patch(ch1_box)
-    ax.text(3.3, 6.1, "1. Persistent Channels (60%)", ha='center', va='center',
-            fontsize=10.0, fontweight='bold', color=c_pers_bdr)
-    ax.text(3.3, 5.75, "Lifetime Sensitivity:  Ω = 0.05", ha='center', va='center',
+    ax.text(3.3, 6.55, r"1. Persistent Channels ($60\%$ Slots)", ha='center', va='center',
+            fontsize=9.8, fontweight='bold', color=c_pers_bdr)
+    ax.text(3.3, 6.20, r"$\Omega_{\mathrm{pers}} = 0.05 \quad \rightarrow \quad \Delta t_{\mathrm{eff}} \approx \Delta t$", ha='center', va='center',
             fontsize=8.8, fontweight='bold', color=c_dark)
-    ax.text(3.3, 5.42, "• Invariant rules, System Prompt, User ID\n• Near-zero decay across 100k+ tokens\n• Never suffers from catastrophic amnesia",
-            ha='center', va='center', fontsize=7.8, color=c_body)
+    ax.text(3.3, 5.75, "• Invariant rules, System Prompt, Persona\n• Near-zero decay across 100k+ tokens\n• Immune to catastrophic amnesia",
+            ha='center', va='center', fontsize=7.6, color=c_body)
 
     # Channel 2: Working Memory
-    ch2_box = patches.FancyBboxPatch((5.9, 4.7), 4.2, 1.65, boxstyle="round,pad=0.08",
+    ch2_box = patches.FancyBboxPatch((5.9, 5.15), 4.2, 1.70, boxstyle="round,pad=0.08",
                                      facecolor=c_work_bg, edgecolor=c_work_bdr, linewidth=1.4)
     ax.add_patch(ch2_box)
-    ax.text(8.0, 6.1, "2. Working Memory Channels (30%)", ha='center', va='center',
-            fontsize=10.0, fontweight='bold', color=c_work_bdr)
-    ax.text(8.0, 5.75, "Lifetime Sensitivity:  Ω = 1.00", ha='center', va='center',
+    ax.text(8.0, 6.55, r"2. Working Memory Channels ($30\%$ Slots)", ha='center', va='center',
+            fontsize=9.8, fontweight='bold', color=c_work_bdr)
+    ax.text(8.0, 6.20, r"$\Omega_{\mathrm{work}} = 1.00 \quad \rightarrow \quad \Delta t_{\mathrm{eff}} = \Delta t (1 + E_t)$", ha='center', va='center',
             fontsize=8.8, fontweight='bold', color=c_dark)
-    ax.text(8.0, 5.42, "• Dynamic contextual dialogue flow\n• Topic-boundary aware smooth flush\n• Balances retention with fresh updates",
-            ha='center', va='center', fontsize=7.8, color=c_body)
+    ax.text(8.0, 5.75, "• Dynamic contextual dialogue flow\n• Topic-boundary aware smooth flush\n• Balances retention with fresh updates",
+            ha='center', va='center', fontsize=7.6, color=c_body)
 
     # Channel 3: Ephemeral Scratchpad
-    ch3_box = patches.FancyBboxPatch((10.6, 4.7), 4.2, 1.65, boxstyle="round,pad=0.08",
+    ch3_box = patches.FancyBboxPatch((10.6, 5.15), 4.2, 1.70, boxstyle="round,pad=0.08",
                                      facecolor=c_scratch_bg, edgecolor=c_scratch_bdr, linewidth=1.4)
     ax.add_patch(ch3_box)
-    ax.text(12.7, 6.1, "3. Ephemeral Scratchpad (10%)", ha='center', va='center',
-            fontsize=10.0, fontweight='bold', color=c_scratch_bdr)
-    ax.text(12.7, 5.75, "Lifetime Sensitivity:  Ω = 25.0 ~ 50.0", ha='center', va='center',
+    ax.text(12.7, 6.55, r"3. Ephemeral Scratchpad ($10\%$ Slots)", ha='center', va='center',
+            fontsize=9.8, fontweight='bold', color=c_scratch_bdr)
+    ax.text(12.7, 6.20, r"$\Omega_{\mathrm{scratch}} = 25.0 \quad \rightarrow \quad \Delta t_{\mathrm{eff}} = \Delta t (1 + 25 E_t)$", ha='center', va='center',
             fontsize=8.8, fontweight='bold', color=c_dark)
-    ax.text(12.7, 5.42, "• Scratchpad arithmetic, typos, nonce tokens\n• Ultra-fast eviction to 0.0000 after reasoning\n• Eliminates distractor noise (Context Rot)",
-            ha='center', va='center', fontsize=7.8, color=c_body)
+    ax.text(12.7, 5.75, "• Scratchpad arithmetic, typos, nonce tokens\n• Ultra-fast eviction to 0.0000 after step\n• Eliminates distractor noise (Context Rot)",
+            ha='center', va='center', fontsize=7.6, color=c_body)
 
     # Modulated Effective Step Formula Banner
-    ax.text(8.0, 4.52, "Effective Time-Step Decay:   Δt_eff^(i) = Δt^(i) · ( 1 + Ω_i · E_t^(i) )   ⟹   dA = exp( -Δt_eff · A )",
+    ax.text(8.0, 4.95, r"Master Channel Decay: $\Delta t_{\mathrm{eff}}^{(i)} = \Delta t^{(i)} \cdot ( 1 + \Omega_i \cdot E_t^{(i)} ) \quad \rightarrow \quad \bar{A} = \exp( -\Delta t_{\mathrm{eff}} A )$",
             ha='center', va='center', fontsize=9.2, fontweight='bold', color='#1E293B',
             bbox=dict(boxstyle="round,pad=0.25", facecolor='#F1F5F9', edgecolor='#94A3B8', lw=1.0))
 
     # -------------------------------------------------------------------------
     # 3. BOTTOM SECTION: STATE UPDATE, ORTHOGONAL NULLIFICATION & EMISSION
     # -------------------------------------------------------------------------
-    box_bot = patches.FancyBboxPatch((0.8, 0.45), 14.4, 3.75, boxstyle="round,pad=0.12",
+    box_bot = patches.FancyBboxPatch((0.8, 0.45), 14.4, 4.15, boxstyle="round,pad=0.12",
                                      facecolor='#FAFAFA', edgecolor='#E2E8F0', linewidth=1.2)
     ax.add_patch(box_bot)
-    ax.text(1.2, 3.95, "Phase 3: State Space Recurrence & Orthogonal Subspace Nullification (O(1) = 17.0 KB)", 
+    ax.text(1.2, 4.35, r"Phase 3: State Space Recurrence & Orthogonal Nullification ($O(1) = 17.0\mathrm{ KB}$ Footprint)", 
             fontsize=11, fontweight='bold', color=c_dark)
 
     # State Core Block
-    core_box = patches.FancyBboxPatch((1.2, 2.05), 8.8, 1.65, boxstyle="round,pad=0.08",
+    core_box = patches.FancyBboxPatch((1.2, 2.25), 8.8, 1.85, boxstyle="round,pad=0.08",
                                       facecolor=c_core_bg, edgecolor=c_core_bdr, linewidth=1.4)
     ax.add_patch(core_box)
-    ax.text(5.6, 3.45, "Dual State Space Recurrence Core  (Exact O(1) Constant Memory: 17.0 KB)", 
+    ax.text(5.6, 3.82, r"Dual State Space Recurrence Core ($O(1)$ Constant Memory: Exact $17.0\mathrm{ KB}$)", 
             ha='center', va='center', fontsize=10.2, fontweight='bold', color=c_core_bdr)
 
     # Mathematical Equation inside Core
-    ax.text(5.6, 2.95, "h_t^(raw) = exp( -Δt_eff ⊙ A ) ⊙ h_(t-1)  +  ( Δt · B_t ) ⊙ u_eff", 
-            ha='center', va='center', fontsize=9.8, fontweight='bold', color=c_dark)
-    ax.text(5.6, 2.45, "Continuous SSM State: h_t ∈ R^(d_inner × d_state)  +  Discrete Categorical Belief: z_t ~ q(z|h, x)", 
+    ax.text(5.6, 3.38, r"$h_t^{\mathrm{raw}} = \exp( -\Delta t_{\mathrm{eff}} \odot A ) \odot h_{t-1} + ( \Delta t \cdot B_t ) \odot u_{\mathrm{eff}}$", 
+            ha='center', va='center', fontsize=10.2, fontweight='bold', color=c_dark)
+    ax.text(5.6, 2.92, r"Continuous SSM: $h_t \in \mathbb{R}^{2 \times 128 \times 16}$ ($16.0\mathrm{ KB}$)  $+$  Discrete Belief: $z_t \sim q_\phi(z \mid h_t, x_t)$ ($1.0\mathrm{ KB}$)", 
             ha='center', va='center', fontsize=8.2, color=c_muted)
-    ax.text(5.6, 2.20, "Memory footprint: Exact flat 17.0 KB (Zero KV Cache buffers required)", 
-            ha='center', va='center', fontsize=8.0, fontweight='bold', color='#16A34A')
+    ax.text(5.6, 2.55, r"$h_t$ acts as a continuous Associative Hash Map: binds keys and values via Outer Products", 
+            ha='center', va='center', fontsize=7.8, fontweight='bold', color='#16A34A')
 
     # Connect Phase 2 to Core
-    ax.annotate("", xy=(5.6, 3.7), xytext=(5.6, 4.3), arrowprops=dict(arrowstyle="->", color=c_arrow, lw=1.5))
+    ax.annotate("", xy=(5.6, 4.15), xytext=(5.6, 4.75), arrowprops=dict(arrowstyle="->", color=c_arrow, lw=1.5))
 
     # Orthogonal Nullification Block
-    proj_box = patches.FancyBboxPatch((10.4, 2.05), 4.4, 1.65, boxstyle="round,pad=0.08",
+    proj_box = patches.FancyBboxPatch((10.4, 2.25), 4.4, 1.85, boxstyle="round,pad=0.08",
                                       facecolor=c_proj_bg, edgecolor=c_proj_bdr, linewidth=1.4)
     ax.add_patch(proj_box)
-    ax.text(12.6, 3.45, "Orthogonal Nullification (P_⊥)", ha='center', va='center',
+    ax.text(12.6, 3.82, r"Orthogonal Nullification ($P_\perp$)", ha='center', va='center',
             fontsize=10.0, fontweight='bold', color=c_proj_bdr)
-    ax.text(12.6, 3.0, "h_t  ←  P_⊥ · h_t^(raw)", ha='center', va='center',
-            fontsize=10.0, fontweight='bold', color=c_dark)
-    ax.text(12.6, 2.58, "P_⊥ = ( I - V_del · V_del^T )", ha='center', va='center',
-            fontsize=8.5, color=c_body)
-    ax.text(12.6, 2.25, "Zero-out deleted variables & PII\n(0.0000% leakage verification)", 
-            ha='center', va='center', fontsize=7.5, color='#B91C1C')
+    ax.text(12.6, 3.38, r"$h_t \leftarrow P_\perp \cdot h_t^{\mathrm{raw}}$", ha='center', va='center',
+            fontsize=10.2, fontweight='bold', color=c_dark)
+    ax.text(12.6, 2.95, r"$P_\perp = I - V_{\mathrm{del}} V_{\mathrm{del}}^\top$", ha='center', va='center',
+            fontsize=9.0, fontweight='bold', color=c_body)
+    ax.text(12.6, 2.55, "Surgically zeroes target subspace\n(0.0000% leakage verification on unlearning)", 
+            ha='center', va='center', fontsize=7.2, color='#B91C1C')
 
     # Arrow from Core to Orthogonal Nullification
-    ax.annotate("", xy=(10.4, 2.87), xytext=(10.0, 2.87), arrowprops=dict(arrowstyle="->", color=c_proj_bdr, lw=1.5))
+    ax.annotate("", xy=(10.4, 3.17), xytext=(10.0, 3.17), arrowprops=dict(arrowstyle="->", color=c_proj_bdr, lw=1.5))
 
     # Output Generation & Next Step Loops
     # Output Block
-    out_box = patches.FancyBboxPatch((1.2, 0.65), 6.4, 1.15, boxstyle="round,pad=0.08",
+    out_box = patches.FancyBboxPatch((1.2, 0.65), 6.4, 1.35, boxstyle="round,pad=0.08",
                                      facecolor=c_out_bg, edgecolor=c_out_bdr, linewidth=1.4)
     ax.add_patch(out_box)
-    ax.text(4.4, 1.45, "Output Emission & Next Word Logits", ha='center', va='center',
+    ax.text(4.4, 1.70, "Output Emission & Next Token Logits", ha='center', va='center',
             fontsize=9.8, fontweight='bold', color=c_out_bdr)
-    ax.text(4.4, 1.12, "y_t = C_t · h_t + D · x_t   ⟹   Logits = Head(y_t)", ha='center', va='center',
-            fontsize=8.8, fontweight='bold', color=c_dark)
-    ax.text(4.4, 0.82, "Zero-Token Latent Rollout Planner: internal simulation without text generation", 
-            ha='center', va='center', fontsize=7.5, color=c_muted)
+    ax.text(4.4, 1.32, r"$y_t = (C_t h_t + D x_t) \odot \mathrm{SiLU}(\mathrm{gate}_t) \quad \rightarrow \quad \mathrm{Logits}_t = W_v y_t$", ha='center', va='center',
+            fontsize=8.0, fontweight='bold', color=c_dark)
+    ax.text(4.4, 0.92, r"Zero-Token Latent Rollout: $Q(\tau) = \sum_{\tau=1}^K \lambda^\tau V(z_\tau, h_\tau)$ (No Text Needed)", 
+            ha='center', va='center', fontsize=7.2, color=c_muted)
 
     # Carryover Block
-    carry_box = patches.FancyBboxPatch((8.4, 0.65), 6.4, 1.15, boxstyle="round,pad=0.08",
+    carry_box = patches.FancyBboxPatch((8.4, 0.65), 6.4, 1.35, boxstyle="round,pad=0.08",
                                        facecolor='#F8FAFC', edgecolor='#64748B', linewidth=1.4)
     ax.add_patch(carry_box)
-    ax.text(11.6, 1.45, "Next Step State Carryover (t ⟶ t+1)", ha='center', va='center',
+    ax.text(11.6, 1.70, r"Next Step State Recurrence ($h_t \rightarrow h_{t-1}^{(t+1)}$)", ha='center', va='center',
             fontsize=9.8, fontweight='bold', color=c_dark)
-    ax.text(11.6, 1.12, "h_t is forwarded as h_(t-1) for next token", ha='center', va='center',
-            fontsize=8.8, fontweight='bold', color=c_body)
-    ax.text(11.6, 0.82, "State size remains invariant at 17.0 KB regardless of sequence length L", 
+    ax.text(11.6, 1.32, r"$h_t$ carries forward directly as initial state for step $t+1$", ha='center', va='center',
+            fontsize=8.5, fontweight='bold', color=c_body)
+    ax.text(11.6, 0.92, r"Flat $17.0\mathrm{ KB}$ memory is maintained for $L \geq 100\mathrm{k}$ (Zero KV Cache Growth)", 
             ha='center', va='center', fontsize=7.5, fontweight='bold', color='#0284C7')
 
     # Connect Core / Projection to Outputs
-    ax.annotate("", xy=(4.4, 1.8), xytext=(4.4, 2.05), arrowprops=dict(arrowstyle="->", color=c_out_bdr, lw=1.5))
-    ax.annotate("", xy=(11.6, 1.8), xytext=(12.6, 2.05), arrowprops=dict(arrowstyle="->", color=c_arrow, lw=1.5))
+    ax.annotate("", xy=(4.4, 2.0), xytext=(4.4, 2.25), arrowprops=dict(arrowstyle="->", color=c_out_bdr, lw=1.5))
+    ax.annotate("", xy=(11.6, 2.0), xytext=(12.6, 2.25), arrowprops=dict(arrowstyle="->", color=c_arrow, lw=1.5))
 
-    # Save to both paths
+    # Save to all target paths
     os.makedirs("figures", exist_ok=True)
     os.makedirs("paper/figures", exist_ok=True)
     os.makedirs("presentation/figures", exist_ok=True)
@@ -245,15 +246,14 @@ def create_diagram():
     out_path2 = "paper/figures/fig19_state_space_cafe_dataflow.png"
     out_path3 = "presentation/figures/fig19_state_space_cafe_dataflow.png"
 
-    plt.tight_layout()
     plt.savefig(out_path1, dpi=300, facecolor=fig.get_facecolor(), edgecolor='none', bbox_inches='tight')
     plt.savefig(out_path2, dpi=300, facecolor=fig.get_facecolor(), edgecolor='none', bbox_inches='tight')
     plt.savefig(out_path3, dpi=300, facecolor=fig.get_facecolor(), edgecolor='none', bbox_inches='tight')
     plt.close()
 
-    print(f"✅ Generated: {out_path1}")
-    print(f"✅ Generated: {out_path2}")
-    print(f"✅ Generated: {out_path3}")
+    print(f"✅ Generated with complete LaTeX math: {out_path1}")
+    print(f"✅ Generated with complete LaTeX math: {out_path2}")
+    print(f"✅ Generated with complete LaTeX math: {out_path3}")
 
 if __name__ == "__main__":
     create_diagram()
