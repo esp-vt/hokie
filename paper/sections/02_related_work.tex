@@ -9,11 +9,11 @@ Subsequent advances including RWKV \citep{peng2023rwkv}, xLSTM \citep{beck2024xl
 However, existing SSMs remain fundamentally deterministic transducers that emit tokens autoregressively without stochastic world simulation capabilities.
 
 \paragraph{Generative World Models and Model-Based Planning.}
-In reinforcement learning and robotics, Recurrent State-Space Models (RSSM) such as Dreamer \citep{hafner2023mastering} model environments via dual deterministic and stochastic latent spaces, performing imagination and policy optimization entirely within latent trajectories.
+In reinforcement learning and robotics, Recurrent State-Space Models (RSSM) such as Dreamer \citep{hafner2023mastering,hafner2024dreamerv3} model environments via dual deterministic and stochastic latent spaces, performing imagination and policy optimization entirely within latent trajectories.
 While world models have proven sample-efficient for continuous control and visual domains, adapting RSSM dynamics into discrete autoregressive language modeling backbones remains largely unexplored.
-NeuroWorld-LM fills this void by demonstrating that language tokens can be treated as environmental observations and actions, enabling Zero-Token latent thought simulation.
+Hokie-LM fills this void by demonstrating that language tokens can be treated as environmental observations and actions, enabling Zero-Token latent thought simulation.
 
 \paragraph{Deliberative Reasoning and Chain-of-Thought.}
 To solve complex multi-step reasoning tasks, models typically generate explicit intermediate tokens (Chain-of-Thought \citep{wei2022chain}, Tree-of-Thoughts \citep{yao2023tree}, RAP \citep{hao2023reasoning}).
 However, verbalizing every intermediate hypothesis in text space incurs severe computational latency and quadratic memory bottlenecks.
-NeuroWorld-LM introduces Zero-Token Latent Rollout Planning, executing multi-step hypothesis exploration directly in state space, bypassing vocabulary projection overhead on intermediate steps.
+Hokie-LM introduces Zero-Token Latent Rollout Planning, executing multi-step hypothesis exploration directly in state space, bypassing vocabulary projection overhead on intermediate steps.

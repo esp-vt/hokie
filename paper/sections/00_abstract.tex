@@ -1,13 +1,13 @@
 \begin{abstract}
 Autoregressive Transformers have achieved remarkable success across natural language processing but remain plagued by three fundamental bottlenecks: (1) an $\mathcal{O}(T)$ Key-Value (KV) cache memory explosion, (2) an architectural inability to forget that causes catastrophic distractor accumulation, context rot, and unlearning failure, and (3) an extreme computational inefficiency in multi-step reasoning requiring verbose text token chains. 
-In this work, we propose \textbf{NeuroWorld-LM}, a novel foundation architecture that casts language modeling as a generative world model with dual-state space dynamics and intelligent active forgetting.
-NeuroWorld-LM integrates a deterministic selective state-space model (SSM) with discrete categorical latent belief states via a Recurrent State-Space Model (RSSM), achieving exact $\mathcal{O}(1)$ inference memory without KV caches.
-Crucially, we introduce: (1) a \textbf{Cognitive Active Forgetting Engine (CAFE)} with multi-scale channel lifetimes and semantic subspace nullification ($\mathbf{P}_{\perp}$) that resolves variable overwriting (+58.8\%p on conflicting distractors) and enables zero-shot privacy unlearning; and (2) a \textbf{Zero-Token Latent Rollout Engine} that performs internal mental simulations directly in continuous-discrete latent space via surprise-driven gating ($\gamma_t = \mathcal{D}_{\mathrm{KL}}(q \parallel p)$).
-Extensive empirical evaluations demonstrate that NeuroWorld-LM:
-(i) scales to $16\text{,}384$-token associative recall with $81.2\%$ accuracy while maintaining a flat $17.0\text{ KB}$ memory footprint ($1\text{,}927\times$ reduction over Transformer KV caches);
+In this work, we propose \textbf{Hokie-LM}, a novel foundation architecture that casts language modeling as a generative world model with dual-state space dynamics and intelligent active forgetting.
+Hokie-LM integrates a deterministic selective state-space model (SSM) with discrete categorical latent belief states via a Recurrent State-Space Model (RSSM), achieving exact $\mathcal{O}(1)$ inference memory ($17.0\text{ KB}$) without KV caches.
+Crucially, we introduce: (1) a \textbf{Cognitive Active Forgetting Engine (CAFE)} with multi-scale channel lifetimes and semantic subspace nullification ($\mathbf{P}_{\perp}$) that resolves variable overwriting ($+58.8\%p$ on conflicting distractors, $99.4\%$ accuracy) and enables mathematical zero-leakage privacy unlearning; and (2) a \textbf{Zero-Token Latent Rollout Engine} that performs internal mental simulations directly in continuous-discrete latent space via surprise-driven gating ($\gamma_t = \mathcal{D}_{\mathrm{KL}}(q \parallel p)$).
+Extensive empirical evaluations demonstrate that Hokie-LM:
+(i) scales to $16\text{,}384$-token associative recall with $81.2\%$ accuracy while maintaining a flat $17.0\text{ KB}$ memory footprint ($1\text{,}927.5\times$ reduction over Transformer KV caches);
 (ii) achieves $+37.5\%$ accuracy jump on 5-hop deduction puzzles and $+40.0\%$ on GSM8K math reasoning over direct autoregression;
-(iii) occupies a strictly superior accuracy-compute Pareto frontier, outperforming Verbal CoT with $12\times$ lower FLOPs; and
-(iv) preserves bounded, non-divergent state SNR across 100,000-token horizons with $93.3\%$ cross-topic interference reduction.
+(iii) occupies a strictly superior accuracy-compute Pareto frontier, outperforming Verbal CoT with $11.8\times \sim 12\times$ lower FLOPs ($1.25\times$ vs $14.8\times$); and
+(iv) preserves bounded, non-divergent state SNR of $24.7\text{ dB}$ across 100,000-token horizons with $93.3\%$ cross-topic interference reduction.
 Our findings establish a memory-efficient, distractor-immune paradigm for constant-memory generative intelligence.
 \end{abstract}
 

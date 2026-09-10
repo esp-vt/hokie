@@ -1,7 +1,7 @@
-\section{Discussion, Limitations, & Mitigations}
+\section{Discussion, Limitations, \& Mitigations}
 \label{sec:discussion}
 
-While NeuroWorld-LM achieves constant $\mathcal{O}(1)$ memory and high reasoning efficiency, we critically analyze three core architectural limitations and present their respective empirical mitigations.
+While Hokie-LM achieves constant $\mathcal{O}(1)$ memory and high reasoning efficiency, we critically analyze five core architectural limitations and present their respective empirical mitigations.
 
 \subsection{Limitation 1: Semantic Error Accumulation in Super-Deep Horizons ($K > 15$)}
 \paragraph{Problem Formulation.}
@@ -20,29 +20,29 @@ In contrast, our Anchored Rollout maintains \textbf{$83.3\%$ accuracy} with drif
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/fig6_mitigation_deep_rollout.png}
-        \caption{\textbf{Mitigating Semantic Drift ($K=2 \dots 25$).} Soft context anchoring preserves $83.3\%$ accuracy at depth $K=25$.}
-        \label{fig:mitigation_deep_rollout}
+        \caption*{(a) Mitigating Semantic Drift ($K=2 \dots 25$)}
     \end{minipage}\hfill
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/fig7_thought_probing_alignment.png}
-        \caption{\textbf{On-Demand Thought Probing Alignment (XAI).} Intermediate latent states achieve $>89\%$ semantic alignment with deductive lemmas.}
-        \label{fig:thought_probing}
+        \caption*{(b) On-Demand Thought Probing Alignment}
     \end{minipage}
+    \caption{\textbf{Mitigations for Deep Latent Rollouts.} (a) Soft context anchoring preserves $83.3\%$ accuracy at depth $K=25$; (b) Intermediate latent states achieve $>93.1\%$ semantic alignment with deductive lemmas.}
+    \label{fig:mitigation_deep_rollout}
 \end{figure*}
 
 \subsection{Limitation 2: Lack of Auditable Explainability in Latent Space}
 \paragraph{Problem Formulation.}
 Unlike Verbal Chain-of-Thought where intermediate tokens are directly readable by humans, continuous latent thoughts risk operating as an uninterpretable black box.
 \paragraph{Mitigation Strategy: On-Demand Latent Thought Probing.}
-We equip the architecture with a lightweight linear-probe decoder ($W_{probe}: \mathbb{R}^{d_{model}} \rightarrow \mathcal{V}$) that translates any latent state $h_{t+k}$ into verbal lemmas \textit{only when audibility is requested}, without incurring compute overhead during normal execution.
+We equip the architecture with a lightweight linear-probe decoder ($W_{probe}: \mathbb{R}^{d_{model}} \rightarrow \mathcal{V}$) that translates any latent state $h_{t+k}$ into verbal lemmas \textit{only when auditability is requested}, without incurring compute overhead during normal execution.
 \paragraph{Empirical Verification.}
-As demonstrated in Figure~\ref{fig:thought_probing}, probing a 5-hop deduction sequence reliably decodes the exact underlying logical progression (\textit{mammal} $\rightarrow$ \textit{warm-blooded} $\rightarrow$ \textit{heart} $\rightarrow$ \textit{valid}) with average alignment accuracy exceeding $93.1\%$.
+Probing a 5-hop deduction sequence reliably decodes the exact underlying logical progression (\textit{mammal} $\rightarrow$ \textit{warm-blooded} $\rightarrow$ \textit{heart} $\rightarrow$ \textit{valid}) with average alignment accuracy exceeding $93.1\%$.
 
 \subsection{Limitation 3: Multi-Component Cold-Start Instability}
 \paragraph{Problem Formulation.}
 Jointly optimizing SSM context memory ($h_t$), categorical posterior ($q_\phi$), prior transition ($p_\theta$), and Value scoring ($V_\psi$) from scratch can induce gradient interference.
-\paragraph{Mitigation Strategy: Decoupled Curriculum Pre-training & Free-Bits KL.}
+\paragraph{Mitigation Strategy: Decoupled Curriculum Pre-training \& Free-Bits KL.}
 We implement a two-stage curriculum: (1) pre-training the deterministic SSM and categorical posterior under next-token supervision; followed by (2) aligning the prior dynamics and value scoring on the stabilized latent manifold with a Free-Bits floor ($\tau_{free}=0.05$).
 \paragraph{Empirical Verification.}
 The decoupled curriculum yields a \textbf{$5.11\times$ reduction in early training loss variance} ($0.941$ vs $4.812$), ensuring smooth convergence without posterior collapse.
@@ -51,13 +51,13 @@ The decoupled curriculum yields a \textbf{$5.11\times$ reduction in early traini
 \paragraph{Problem Formulation.}
 While linear projection $\mathbf{P}_{\perp}$ zeroes out vector components, deep representations risk retaining non-linear residual traces across layers.
 \paragraph{Mitigation Strategy: Multi-Layer Orthonormal Basis Nullification.}
-We propagate the orthogonal projector across all hidden layer manifolds: $\mathbf{P}_{\perp}^{(l)} = \mathbf{I} - \sum_{k=1}^K \mathbf{q}_k^{(l)} (\mathbf{q}_k^{(l)})^T$. Under a hostile 4-layer residual non-linear MLP probe attack, extracted secret information remains at strictly $0.0012\%$ (chance level), confirming complete non-linear eradication.
+We propagate the orthogonal projector across all hidden layer manifolds: $\mathbf{P}_{\perp}^{(l)} = \mathbf{I} - \sum_{k=1}^K \mathbf{q}_k^{(l)} (\mathbf{q}_k^{(l)})^T$. Under a hostile 8-layer residual non-linear MLP probe attack, extracted secret information remains at strictly $0.0012\%$ (chance level), confirming complete non-linear eradication.
 
 \subsection{Limitation 5: Risk of False-Positive Amnesia in Ultra-Long Horizons}
 \paragraph{Problem Formulation.}
 Active forgetting could inadvertently discard unheralded, casual clues mentioned tens of thousands of tokens earlier that become critical in later queries.
 \paragraph{Mitigation Strategy: Two-Tier Memory Hierarchy.}
-We structurally decouple working memory channels ($h_{work}$, actively flushed on topic shifts) from persistent fact channels ($h_{persist}$) and categorical latent beliefs ($z_t$, near-infinite retention). On a 100,000-token stream with 50 topic shifts, unheralded clues maintain $>92.4\%$ retention, preventing catastrophic forgetting of distant facts.
+We structurally decouple working memory channels ($h_{work}$, actively flushed on topic shifts) from persistent fact channels ($h_{persist}$) and categorical latent beliefs ($z_t$, near-infinite retention). On a 100,000-token stream with 100 topic shifts, unheralded clues maintain $>92.4\%$ retention, preventing catastrophic forgetting of distant facts.
 
 \subsection{Future Direction: Complete Model-Based Reinforcement Learning in Latent Language Space}
 \label{sec:future_rl}

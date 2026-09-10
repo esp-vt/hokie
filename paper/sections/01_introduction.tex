@@ -18,17 +18,16 @@ However, existing SSMs operate with purely deterministic single-state trajectori
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{figures/fig1_surprise_heatmap.png}
-    \caption{\textbf{Surprise-Driven Dynamic Memory Gating in NeuroWorld-LM.} The surprise metric $\gamma_t = \mathcal{D}_{\mathrm{KL}}(q \parallel p)$ measures information novelty, automatically spiking at critical entities, values, and query tokens, while suppressing memory churn on routine stopwords.}
+    \caption{\textbf{Surprise-Driven Dynamic Memory Gating in Hokie-LM.} The surprise metric $\gamma_t = \mathcal{D}_{\mathrm{KL}}(q \parallel p)$ measures information novelty, automatically spiking at critical entities, values, and query tokens, while suppressing memory churn on routine stopwords.}
     \label{fig:surprise_heatmap}
 \end{figure*}
 
-To bridge this fundamental gap, we introduce \textbf{NeuroWorld-LM}, a unified language model architecture that marries Recurrent State-Space World Models (RSSM) with selective state-space duality and cognitive active forgetting.
+To bridge this fundamental gap, we introduce \textbf{Hokie-LM}, a unified foundation architecture that marries Recurrent State-Space World Models (RSSM) with selective state-space duality and cognitive active forgetting.
 Our primary contributions are summarized as follows:
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Dual-Loop State Dynamics:} We formulate sequence modeling via deterministic continuous-time SSM context memory ($h_t$) combined with discrete categorical latent beliefs ($z_t$). This resolves the information bottleneck of linear RNNs while preserving strictly $\mathcal{O}(1)$ inference memory.
-    \item \textbf{Cognitive Active Forgetting Engine (CAFE):} We introduce a 4-tier intelligent forgetting architecture featuring multi-scale channel lifetimes, decoupled storage/eviction dual-gating, and semantic subspace nullification ($\mathbf{P}_{\perp}$), solving the context rot and distractor interference problems of Transformers with provable zero leakage.
+    \item \textbf{Dual-Loop State Dynamics:} We formulate sequence modeling via deterministic continuous-time SSM context memory ($h_t$) combined with discrete categorical latent beliefs ($z_t$). This resolves the information bottleneck of linear RNNs while preserving strictly $\mathcal{O}(1)$ inference memory ($17.0\text{ KB}$).
+    \item \textbf{Cognitive Active Forgetting Engine (CAFE):} We introduce an intelligent forgetting architecture featuring multi-scale channel lifetimes, decoupled storage/eviction dual-gating, and semantic subspace nullification ($\mathbf{P}_{\perp}$), solving the context rot and distractor interference problems of Transformers with provable zero leakage.
     \item \textbf{Zero-Token Latent Rollout Planner:} We introduce an internal mental simulation engine that rolls out $K$-step latent trajectories $(h_{t+k}, z_{t+k})$ conditioned on learned Value scoring, jumping directly to target conclusions without generating redundant intermediate tokens.
-    \item \textbf{Surprise-Driven Gating & Chunked Parallel Scan:} We employ variational KL divergence as an analytical surprise metric ($\gamma_t$), dynamically regulating memory persistence and achieving $8.69\times$ training acceleration via State-Space Duality (SSD) chunked scans.
-    \item \textbf{Comprehensive Empirical Validation:} Across MQAR 16k, multi-hop PrOntoQA, GSM8K math reasoning, 100k-token active memory purging, and H100 GPU concurrency, NeuroWorld-LM establishes a strictly superior accuracy and efficiency frontier over Transformers.
+    \item \textbf{Surprise-Driven Gating \& Chunked Parallel Scan:} We employ variational KL divergence as an analytical surprise metric ($\gamma_t$), dynamically regulating memory persistence and achieving $8.69\times$ training acceleration via State-Space Duality (SSD) chunked scans.
+    \item \textbf{Comprehensive Empirical Validation:} Across MQAR 16k, multi-hop reasoning, GSM8K, 100k-token active memory purging, and H100 GPU concurrency, Hokie-LM establishes a strictly superior accuracy and efficiency frontier over Transformers.
 \end{itemize}
-
