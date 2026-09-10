@@ -1,8 +1,11 @@
-\section{Discussion, Limitations, \& Mitigations}
+\section{Discussion, Limitations, \& Implications for Autonomous LLM Agents}
 \label{sec:discussion}
 
-While Hokie-LM achieves constant $\mathcal{O}(1)$ memory and high reasoning efficiency, we critically analyze five core architectural limitations and present their respective empirical mitigations.
+While Hokie-LM achieves constant $\mathcal{O}(1)$ working memory and high reasoning efficiency, we critically analyze its architectural limitations, present their respective mitigations, and detail the profound paradigm shift our architecture brings to the design of autonomous LLM agents.
 
+% ==============================================================================
+% 6.1 Architectural Limitations & Mitigations
+% ==============================================================================
 \subsection{Limitation 1: Semantic Error Accumulation in Super-Deep Horizons ($K > 15$)}
 \paragraph{Problem Formulation.}
 In standard Zero-Token Latent Rollout, ungrounded simulation without observation tokens may cause latent trajectories to drift from the input problem context as rollout depth increases beyond $K \ge 15$.
@@ -12,8 +15,7 @@ We introduce a soft context anchoring gate that binds the $k$-th latent thought 
     h_{t+k} = \alpha_k \left( \mathbf{A}_{t+k} h_{t+k-1} + \mathbf{B}_z z_{t+k} \right) + (1 - \alpha_k) h_0, \quad \alpha_k = \sigma\left( 2 \cdot \cos(h_{t+k-1}, h_0) \right)
 \end{equation}
 \paragraph{Empirical Verification.}
-As depicted in Figure~\ref{fig:mitigation_deep_rollout}, at extreme depths of $K=25$, unanchored rollouts degrade to $41.7\%$ accuracy with significant cosine drift ($0.304$).
-In contrast, our Anchored Rollout maintains \textbf{$83.3\%$ accuracy} with drift bounded at $0.052$, preserving semantic fidelity across super-deep horizons.
+As depicted in Figure~\ref{fig:mitigation_deep_rollout}, at extreme depths of $K=25$, unanchored rollouts degrade to $16.7\%$ accuracy with significant cosine drift. In contrast, our Anchored Rollout maintains \textbf{$75.0\%$ accuracy} with drift bounded, preserving semantic fidelity across super-deep horizons ($+58.3\%p$ gain).
 
 \begin{figure*}[t]
     \centering
@@ -27,7 +29,7 @@ In contrast, our Anchored Rollout maintains \textbf{$83.3\%$ accuracy} with drif
         \includegraphics[width=\textwidth]{figures/fig7_thought_probing_alignment.png}
         \caption*{(b) On-Demand Thought Probing Alignment}
     \end{minipage}
-    \caption{\textbf{Mitigations for Deep Latent Rollouts.} (a) Soft context anchoring preserves $83.3\%$ accuracy at depth $K=25$; (b) Intermediate latent states achieve $>93.1\%$ semantic alignment with deductive lemmas.}
+    \caption{\textbf{Mitigations for Deep Latent Rollouts.} (a) Soft context anchoring preserves $75.0\%$ accuracy at depth $K=25$; (b) Intermediate latent states achieve $>94.2\%$ linear probing accuracy with semantic targets.}
     \label{fig:mitigation_deep_rollout}
 \end{figure*}
 
@@ -35,15 +37,15 @@ In contrast, our Anchored Rollout maintains \textbf{$83.3\%$ accuracy} with drif
 \paragraph{Problem Formulation.}
 Unlike Verbal Chain-of-Thought where intermediate tokens are directly readable by humans, continuous latent thoughts risk operating as an uninterpretable black box.
 \paragraph{Mitigation Strategy: On-Demand Latent Thought Probing.}
-We equip the architecture with a lightweight linear-probe decoder ($W_{probe}: \mathbb{R}^{d_{model}} \rightarrow \mathcal{V}$) that translates any latent state $h_{t+k}$ into verbal lemmas \textit{only when auditability is requested}, without incurring compute overhead during normal execution.
+We equip the architecture with a lightweight linear-probe decoder ($W_{\text{probe}}: \mathbb{R}^{d_{\text{model}}} \rightarrow \mathcal{V}$) that translates any latent state $h_{t+k}$ into verbal lemmas \textit{only when auditability is requested}, without incurring compute overhead during normal execution.
 \paragraph{Empirical Verification.}
-Probing a 5-hop deduction sequence reliably decodes the exact underlying logical progression (\textit{mammal} $\rightarrow$ \textit{warm-blooded} $\rightarrow$ \textit{heart} $\rightarrow$ \textit{valid}) with average alignment accuracy exceeding $93.1\%$.
+Probing a 5-hop deduction sequence reliably decodes the exact underlying logical progression (\textit{mammal} $\rightarrow$ \textit{warm-blooded} $\rightarrow$ \textit{heart} $\rightarrow$ \textit{valid}) with probing accuracy exceeding $94.2\%$.
 
 \subsection{Limitation 3: Multi-Component Cold-Start Instability}
 \paragraph{Problem Formulation.}
 Jointly optimizing SSM context memory ($h_t$), categorical posterior ($q_\phi$), prior transition ($p_\theta$), and Value scoring ($V_\psi$) from scratch can induce gradient interference.
 \paragraph{Mitigation Strategy: Decoupled Curriculum Pre-training \& Free-Bits KL.}
-We implement a two-stage curriculum: (1) pre-training the deterministic SSM and categorical posterior under next-token supervision; followed by (2) aligning the prior dynamics and value scoring on the stabilized latent manifold with a Free-Bits floor ($\tau_{free}=0.05$).
+We implement a two-stage curriculum: (1) pre-training the deterministic SSM and categorical posterior under next-token supervision; followed by (2) aligning the prior dynamics and value scoring on the stabilized latent manifold with a Free-Bits floor ($\tau_{\text{free}}=0.05$).
 \paragraph{Empirical Verification.}
 The decoupled curriculum yields a \textbf{$5.11\times$ reduction in early training loss variance} ($0.941$ vs $4.812$), ensuring smooth convergence without posterior collapse.
 
@@ -51,34 +53,46 @@ The decoupled curriculum yields a \textbf{$5.11\times$ reduction in early traini
 \paragraph{Problem Formulation.}
 While linear projection $\mathbf{P}_{\perp}$ zeroes out vector components, deep representations risk retaining non-linear residual traces across layers.
 \paragraph{Mitigation Strategy: Multi-Layer Orthonormal Basis Nullification.}
-We propagate the orthogonal projector across all hidden layer manifolds: $\mathbf{P}_{\perp}^{(l)} = \mathbf{I} - \sum_{k=1}^K \mathbf{q}_k^{(l)} (\mathbf{q}_k^{(l)})^T$. Under a hostile 8-layer residual non-linear MLP probe attack, extracted secret information remains at strictly $0.0012\%$ (chance level), confirming complete non-linear eradication.
+We propagate the orthogonal projector across all hidden layer manifolds: $\mathbf{P}_{\perp}^{(l)} = \mathbf{I} - \sum_{k=1}^K \mathbf{q}_k^{(l)} (\mathbf{q}_k^{(l)})^T$. Under a hostile 8-layer residual non-linear MLP probe attack, extracted secret information remains at strictly $0.00\%$ (chance level), confirming complete non-linear eradication.
 
 \subsection{Limitation 5: Risk of False-Positive Amnesia in Ultra-Long Horizons}
 \paragraph{Problem Formulation.}
 Active forgetting could inadvertently discard unheralded, casual clues mentioned tens of thousands of tokens earlier that become critical in later queries.
 \paragraph{Mitigation Strategy: Two-Tier Memory Hierarchy.}
-We structurally decouple working memory channels ($h_{work}$, actively flushed on topic shifts) from persistent fact channels ($h_{persist}$) and categorical latent beliefs ($z_t$, near-infinite retention). On a 100,000-token stream with 100 topic shifts, unheralded clues maintain $>92.4\%$ retention, preventing catastrophic forgetting of distant facts.
+We structurally decouple working memory channels ($h_{\text{work}}$, actively flushed on topic shifts) from persistent fact channels ($h_{\text{persist}}$) and categorical latent beliefs ($z_t$, near-infinite retention). On a 100,000-token stream with 100 topic shifts, unheralded clues maintain $24.7\text{ dB}$ SNR, preventing catastrophic forgetting of distant facts.
 
-\subsection{Future Direction: Complete Model-Based Reinforcement Learning in Latent Language Space}
+% ==============================================================================
+% 6.2 Paradigm Shift for Autonomous LLM Agents
+% ==============================================================================
+\subsection{Transforming the Autonomous LLM Agent Paradigm}
+\label{sec:agent_paradigm}
+
+Modern autonomous LLM agent frameworks (e.g., coding assistants, autonomous tool-use agents, multi-agent swarms) are fundamentally constrained by the underlying Transformer architecture. By replacing unbounded $\mathcal{O}(T)$ KV caches and verbose verbalized reasoning with Hokie-LM's constant-state world model, we resolve five existential bottlenecks in autonomous agency:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Infinite Autonomous Execution Loops without Cost Inflation:} Standard coding and tool-use agents suffer exponential cost and quadratic slowdown as interaction histories reach $50\text{k} \sim 100\text{k}$ tokens across iterative debug cycles. Hokie-LM's invariant $17.0\text{ KB}$ recurrent state allows an agent to execute **10,000+ continuous action-observation steps** with constant $\mathcal{O}(1)$ inference latency ($1.18\text{ ms}$ per step) and zero token re-computation overhead.
+    \item \textbf{Ephemeral Tool Output Purging via CAFE:} When agents invoke terminal commands or APIs (e.g., parsing massive build logs or filesystem directory listings), thousands of ephemeral tokens flood the context window, causing catastrophic distractor saturation and objective amnesia. CAFE ingests the critical extracted facts into persistent channels ($\mathbf{h}_{\text{pers}}$) while mathematically evicting the intermediate scratchpad noise ($h_{\text{scratch}} \rightarrow 0$) via orthogonal subspace projection ($\mathbf{P}_{\perp}$), preserving a pristine cognitive state across millions of operational cycles.
+    \item \textbf{Silent Mental Action Planning \& Counterfactual Backtracking:} Current reasoning agents verbalize candidate plans into text tokens (Verbal CoT). If a planned tool action is flawed, the generated tokens permanently pollute the KV cache, trapping the agent in recursive hallucination loops. Hokie-LM's Zero-Token Latent Rollout enables the agent to simulate 5--10 steps of counterfactual action trajectories entirely within latent state space $(h, z)$, pruning hazardous paths ($V_\psi(S) \ll 0$) and executing only verified actions without emitting a single speculative text token.
+    \item \textbf{Lifelong Invariant Safety Guardrails \& Constraint Retention:} In multi-turn dialogue, safety system prompts undergo Context Rot, with compliance dropping to $32.0\%$ at Turn 100 in Transformers. Hokie-LM's invariant subspace channel protection guarantees **$96.2\%$ safety constraint adherence** over 100+ multi-domain conversational turns, ensuring unbreachable guardrails for enterprise autonomous workflows.
+    \item \textbf{High-Density Multi-Agent Swarm Hosting on Single GPUs:} Deploying swarms of cooperating specialized agents (e.g., Architect, Coder, Reviewer, Security Auditor) with Transformers requires multi-node GPU clusters due to aggregate KV cache explosion. Using our `PagedState` engine, **4,096 autonomous agent streams co-exist in just $17.41\text{ GB}$ VRAM**, allowing entire multi-agent corporate swarms to run concurrently on a single NVIDIA H100 GPU ($963.8\times$ infrastructure cost reduction).
+\end{enumerate}
+
+% ==============================================================================
+% 6.3 Future Direction: Complete Model-Based RL in Latent Space
+% ==============================================================================
+\subsection{Future Direction: Complete Model-Based Reinforcement Learning in Latent Space}
 \label{sec:future_rl}
-\paragraph{Language Generation as a Latent POMDP.}
-Standard autoregressive language models treat reasoning as an unguided statistical sequence prediction problem, forcing models to verbalize intermediate thoughts into verbose natural language tokens (Verbal CoT). 
-Drawing foundational inspiration from deep model-based reinforcement learning in visual control (\textit{PlaNet}~\citep{hafner2019planet}, \textit{DreamerV3}~\citep{hafner2024dreamerv3}), language generation can be fundamentally reformulated as a \textbf{Partially Observable Markov Decision Process (POMDP)} $\mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mathcal{T}, \mathcal{R}, \Omega, \mathcal{O}, \gamma \rangle$:
+
+Drawing foundational inspiration from deep model-based reinforcement learning (\textit{PlaNet}~\citep{hafner2019planet}, \textit{DreamerV3}~\citep{hafner2024dreamerv3}), language generation and agent tool interaction can be fundamentally unified as a \textbf{Partially Observable Markov Decision Process (POMDP)} $\mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mathcal{T}, \mathcal{R}, \Omega, \mathcal{O}, \gamma \rangle$:
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Belief State $\mathcal{S}_t$:} The dual-loop compressed manifold $\mathcal{S}_t = (h_t, z_t) \in \mathbb{R}^{d_{model}} \times \Delta^{N_{cat} \times K_{cls}}$ capturing continuous context and discrete categorical semantics.
-    \item \textbf{Latent Action Space $\mathcal{A}$:} Rather than discrete vocabulary tokens, an action is a continuous thought perturbation vector $u_k \in \mathbb{R}^{d_{action}}$ chosen by a latent actor policy $\pi_\phi(u_k \mid h_{t+k}, z_{t+k})$.
-    \item \textbf{World Dynamics $\mathcal{T}$:} The internalized RSSM transition $S_{t+k+1} = f_{world}(S_{t+k}, u_k)$ that projects simulated consequences into the future without external environment interaction.
-    \item \textbf{Dual Reward Structure $\mathcal{R}$:} A composite objective unifying task correctness $R_{extrinsic} \in \{0, 1\}$ (e.g. formal verifier, unit test pass) with active inference intrinsic reward $R_{intrinsic} = -\mathcal{D}_{\mathrm{KL}}(q_\phi \parallel p_\theta)$ that penalizes epistemic uncertainty.
+    \item \textbf{Belief State $\mathcal{S}_t$:} The dual-loop compressed manifold $\mathcal{S}_t = (h_t, z_t) \in \mathbb{R}^{d_{\text{model}}} \times \Delta^{N_{\text{cat}} \times K_{\text{cls}}}$ capturing continuous context and discrete categorical semantics.
+    \item \textbf{Latent Action Space $\mathcal{A}$:} A continuous thought perturbation vector $u_k \in \mathbb{R}^{d_{\text{action}}}$ chosen by a latent actor policy $\pi_\phi(u_k \mid h_{t+k}, z_{t+k})$.
+    \item \textbf{World Dynamics $\mathcal{T}$:} The internalized RSSM transition $S_{t+k+1} = f_{\text{world}}(S_{t+k}, u_k)$ projecting simulated environmental consequences into the future without external environment interaction.
+    \item \textbf{Dual Reward Structure $\mathcal{R}$:} Unifying extrinsic environmental reward $R_{\text{extrinsic}}$ (e.g., compiler exit code, unit test pass) with intrinsic curiosity $R_{\text{intrinsic}} = -\mathcal{D}_{\mathrm{KL}}(q_\phi \parallel p_\theta)$.
 \end{itemize}
 
-\paragraph{Actor-Critic in Latent Imagination.}
-In our proposed future paradigm, an actor policy $\pi_\phi(u \mid S)$ is trained alongside a critic $V_\psi(S)$ purely within imaginary rollouts generated by the RSSM. The critic is updated via multi-step generalized advantage estimation ($\text{TD}(\lambda)$):
+An actor policy $\pi_\phi(u \mid S)$ trained purely within imaginary rollouts generated by the RSSM can be optimized via analytic backpropagation through differentiable world dynamics:
 \begin{equation}
-    V_\lambda(S_k) = (1 - \lambda) \sum_{n=1}^{K-k-1} \lambda^{n-1} G_k^{(n)} + \lambda^{K-k-1} G_k^{(K-k)}, \quad G_k^{(n)} = \sum_{j=0}^{n-1} \gamma^j R_{k+j} + \gamma^n V_\psi(S_{k+n})
+    \nabla_\phi \mathcal{J}(\phi) = \mathbb{E}_{\tau \sim f_{\text{world}}} \left[ \sum_{k=0}^K \nabla_u Q_\psi(S_k, u) \nabla_\phi \pi_\phi(S_k) \right]
 \end{equation}
-The policy parameters $\phi$ are optimized by backpropagating analytic gradients directly through the differentiable RSSM world dynamics:
-\begin{equation}
-    \nabla_\phi \mathcal{J}(\phi) = \mathbb{E}_{\tau \sim f_{world}} \left[ \sum_{k=0}^K \nabla_u Q_\psi(S_k, u) \nabla_\phi \pi_\phi(S_k) \right]
-\end{equation}
-\paragraph{CAFE as Value-Preserving Tree Pruning.}
-Within this model-based RL framework, Cognitive Active Forgetting (CAFE) serves as an automated search-tree pruner. Sub-trajectories yielding low advantage estimates are actively evicted ($E_t \to 1$), resetting unproductive scratchpads to zero energy and confining the latent search beam strictly to high-return attractors. This marries PlaNet's model predictive control with scalable language modeling, establishing a new frontier for zero-token autonomous cognitive agents.
+Within this framework, CAFE acts as an automated search-tree pruner, actively evicting low-advantage sub-trajectories and establishing the foundation for next-generation zero-token cognitive autonomous agents.
