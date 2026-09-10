@@ -5,8 +5,8 @@
 \subsection{Proof of Theorem 1 (Variational Regret Bound)}
 \begin{proof}
 Consider partitioning the full sequence $1:T$ into $|\mathcal{T}^*| + 1$ stationary epochs $I_k = [t_k^*, t_{k+1}^*-1]$.
-Within each stationary regime $I_k$, the conditional token transition is predictable from context, yielding $D_{KL}(q \parallel p) = \gamma_t \le \epsilon$. The modulation gate $g_t = \sigma(\gamma_t)$ keeps the forgetting factor $\rho(\mathbf{A}_t)$ strictly uniform, bounding intra-epoch prediction error by $\sum_{t \in I_k} \gamma_t$.
-At each semantic change-point $t_k^* \in \mathcal{T}^*$, incoming evidence induces a surprise spike $\gamma_{t_k^*} \gg 0$, scaling $\tilde{\mathbf{B}}_{t_k^*}$ by $(1 + \sigma(\gamma_{t_k^*}))$. This instantaneously re-allocates sufficient statistics into the hidden state $h_{t_k^*}$ with bounded regret $\mathcal{O}(d_{model} \log T)$. Summing over all change-points and stationary epochs yields the stated regret bound.
+Within each stationary regime $I_k$, the conditional token transition is predictable from context, yielding $D_{\text{KL}}(q \parallel p) = \gamma_t \le \epsilon$. The modulation gate $g_t = \sigma(\gamma_t)$ keeps the forgetting factor $\rho(\mathbf{A}_t)$ strictly uniform, bounding intra-epoch prediction error by $\sum_{t \in I_k} \gamma_t$.
+At each semantic change-point $t_k^* \in \mathcal{T}^*$, incoming evidence induces a surprise spike $\gamma_{t_k^*} \gg 0$, scaling $\tilde{\mathbf{B}}_{t_k^*}$ by $(1 + \sigma(\gamma_{t_k^*}))$. This instantaneously re-allocates sufficient statistics into the hidden state $h_{t_k^*}$ with bounded regret $\mathcal{O}(d_{\text{model}} \log T)$. Summing over all change-points and stationary epochs yields the stated regret bound.
 \end{proof}
 
 \subsection{Proof of Theorem 2 (Stability of Deep Rollout)}
@@ -17,11 +17,88 @@ Unrolling the recurrent state transition for $K$ steps:
 \end{equation}
 Applying the triangle inequality and sub-multiplicativity of matrix norms:
 \begin{equation}
-    \|h_{t+K}\| \le \rho(\mathbf{A})^K \|h_t\| + \|\mathbf{B}_z\| \|z_{max}\| \sum_{k=0}^{K-1} \rho(\mathbf{A})^k
+    \|h_{t+K}\| \le \rho(\mathbf{A})^K \|h_t\| + \|\mathbf{B}_z\| \|z_{\text{max}}\| \sum_{k=0}^{K-1} \rho(\mathbf{A})^k
 \end{equation}
 Substituting the spectral bound $\rho(\mathbf{A}) \le 1 - \epsilon$:
 \begin{equation}
     \sum_{k=0}^{K-1} (1 - \epsilon)^k = \frac{1 - (1 - \epsilon)^K}{\epsilon}
 \end{equation}
-Since Categorical Gumbel-Softmax variables are simplex-constrained ($\|z_{max}\| \le 1$), $\|h_{t+K}\|$ is bounded by $(1 - \epsilon)^K \|h_t\| + \frac{L_z}{\epsilon} (1 - (1 - \epsilon)^K)$. As $K \rightarrow \infty$, the first term vanishes and the second term converges to $\frac{L_z}{\epsilon} < \infty$.
+Since Categorical Gumbel-Softmax variables are simplex-constrained ($\|z_{\text{max}}\| \le 1$), $\|h_{t+K}\|$ is bounded by $(1 - \epsilon)^K \|h_t\| + \frac{L_z}{\epsilon} (1 - (1 - \epsilon)^K)$. As $K \rightarrow \infty$, the first term vanishes and the second term converges to $\frac{L_z}{\epsilon} < \infty$.
 \end{proof}
+
+% ==============================================================================
+% Appendix B: Hyperparameter & Training Configuration
+% ==============================================================================
+\section{Complete Architectural \& Training Hyperparameters}
+\label{app:hyperparams}
+
+Table~\ref{tab:hyperparameters} outlines the complete architectural, optimizer, and simulation hyperparameters utilized across all experiments in this work.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Comprehensive Model Hyperparameters \& Training Configurations.}}
+\label{tab:hyperparameters}
+\begin{tabular}{llc}
+\toprule
+\textbf{Category} & \textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+\multirow{5}{*}{Architecture} 
+ & Hidden Dimension ($d_{\text{model}}$) & 128 (Bench) / 512 (NLP) \\
+ & State Dimension ($d_{\text{state}}$) & 16 \\
+ & Number of Layers ($N_{\text{layers}}$) & 2 / 6 / 32 \\
+ & Latent Codebook ($d_z$) & 32 Categorical $\times$ 32 Classes \\
+ & Persistent Channel Ratio & 60\% ($n_{\text{pers}} = 0.6 \cdot d_{\text{model}}$) \\
+ & Working Channel Ratio & 40\% ($n_{\text{work}} = 0.4 \cdot d_{\text{model}}$) \\
+\midrule
+\multirow{4}{*}{Gating \& Rollout}
+ & Surprise Modulation Weight ($\beta$) & 2.0 \\
+ & Gumbel-Softmax Temperature ($\tau$) & $1.0 \rightarrow 0.2$ (Annealed) \\
+ & Maximum Rollout Horizon ($K_{\text{max}}$) & 6 \\
+ & Value Head Discount Factor ($\gamma$) & 0.99 \\
+\midrule
+\multirow{4}{*}{Optimization}
+ & Optimizer & AdamW ($\beta_1=0.9, \beta_2=0.95$) \\
+ & Base Learning Rate & $1.0 \times 10^{-3}$ \\
+ & Weight Decay & $0.01$ \\
+ & Gradient Clipping Norm & $1.0$ \\
+\midrule
+\multirow{3}{*}{Hardware Setup}
+ & GPU Device & NVIDIA H100 PCIe (80GB VRAM) \\
+ & Memory Bandwidth & 3.35 TB/s (HBM3) \\
+ & Software Stack & PyTorch 2.5 + Triton 3.1 + CUDA 13.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ==============================================================================
+% Appendix C: Benchmark Datasets
+% ==============================================================================
+\section{Dataset Details \& Benchmark Specifications}
+\label{app:datasets}
+
+Table~\ref{tab:dataset_specs} provides the exact specification of all datasets and evaluation suites employed in Section~\ref{sec:experiments}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Dataset and Benchmark Suite Specifications.}}
+\label{tab:dataset_specs}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llcc}
+\toprule
+\textbf{Benchmark Task} & \textbf{Domain / Type} & \textbf{Context ($L$)} & \textbf{Test Samples} \\
+\midrule
+MQAR Retrieval & Synthetic Associative Hash & $512 \sim 16\text{,}384$ & 500 per length \\
+PrOntoQA (3--5 Hop) & First-Order Formal Deduction & $128 \sim 512$ & 2,000 train / 400 test \\
+GSM8K & Grade-School Math Word Problems & $256 \sim 1\text{,}024$ & 1,319 test questions \\
+ARC-Challenge & Multi-Hop Science QA & $128 \sim 512$ & 1,172 test questions \\
+OpenBookQA & Commonsense Fact Reasoning & $128 \sim 512$ & 500 test questions \\
+HumanEval Execution & Python Symbolic State Tracking & $64 \sim 256$ & 200 state traces \\
+100-Turn Dialogue & Multi-Domain Persona Streams & 6,400 tokens & 100 turns $\times$ 40 streams \\
+PII Extraction Suite & Residual Probing \& GCG Jailbreak & $512 \sim 2\text{,}048$ & 300 probing samples \\
+100k Long-Horizon Stream & Multi-Topic Dynamic Sequence & 100,000 tokens & 100 topic shifts \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
