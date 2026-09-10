@@ -523,3 +523,27 @@ python interactive_chat.py --checkpoint checkpoints/neuroworld_chat.pt
 ```bash
 python test_chat_quick.py
 ```
+
+---
+
+## 12. License & Citation (라이선스 및 인용 가이드)
+
+### 🔒 Academic Non-Commercial Research License
+본 프로젝트의 코드, 가중치, 데이터셋 및 관련 연구 산출물은 **[Hokie-LM Non-Commercial Academic Research License](LICENSE)** 하에 배포됩니다.
+* **허용 범위**: 비영리 학술 연구, 과학적 재현 및 교육 목적의 사용.
+* **엄격한 금지 사항**: 사전 서면 승인 없는 **상업적 이용, SaaS/클라우드 유료 서비스 배포, 독점 상용 모델 증류(Distillation), 재판매 및 무단 2차 상업화는 엄격히 금지**됩니다.
+* 상업적 라이선스 및 협업 문의: `eun@vt.edu` (Virginia Tech CS)
+
+### 📖 Citation
+학술 연구에 본 저장소의 코드나 방법론을 활용하실 경우 아래 논문을 인용해 주시기 바랍니다:
+
+```bibtex
+@article{eun2026hokie,
+  title={Why Verbalize Thoughts? Latent World Models Enable Zero-Token Reasoning with Constant-Memory State Space Duality},
+  author={Eun-Lab Research Team},
+  journal={arXiv preprint},
+  institution={Virginia Tech},
+  year={2026}
+}
+```
+
