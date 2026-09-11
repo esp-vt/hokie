@@ -19,6 +19,7 @@ To evaluate whether a strictly $\mathcal{O}(1)$ recurrent state can retain dense
 \small
 \caption{\textbf{MQAR Long-Horizon Retrieval Accuracy and Memory Footprint.} Hokie-LM preserves high retrieval accuracy with an invariant $17.0\text{ KB}$ recurrent state ($1\text{,}927.5\times$ compression over Transformer KV caches at 16,384 tokens).}
 \label{tab:mqar_results}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Sequence Length ($L$)} & \textbf{Hokie-LM Acc (\%)} & \textbf{Latency (ms)} & \textbf{Hokie-LM State} & \textbf{Transformer KV} & \textbf{Compression Ratio} \\
@@ -30,7 +31,8 @@ To evaluate whether a strictly $\mathcal{O}(1)$ recurrent state can retain dense
 8,192 tokens & \textbf{87.5\%} & 285.49 ms & \textbf{17.0 KB} & 16.00 MB & $963.8\times$ \\
 16,384 tokens & \textbf{81.2\%} & 569.82 ms & \textbf{17.0 KB} & 32.00 MB & $\mathbf{1{,}927.5\times}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table*}
 
 \paragraph{Baseline Failure Mechanics vs. Hokie-LM Duality.}
@@ -333,6 +335,7 @@ To empirically substantiate our theoretical claims on active forgetting, we eval
 \small
 \caption{\textbf{Empirical Verification of Cognitive Active Forgetting (CAFE) vs. Baselines on H100.}}
 \label{tab:asfe_benchmarks}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Benchmark Metric} & \textbf{Transformer (KV-Cache)} & \textbf{Passive SSM (Mamba)} & \textbf{CAFE (Ours)} & \textbf{Empirical Gain} \\
@@ -343,7 +346,8 @@ Cross-Topic Boundary Interference & 0.2812 & 0.1841 (Lingering) & \textbf{0.0000
 PII Privacy Residual Leakage & 92.4\% & 84.0\% & \textbf{0.0\%} & $\mathbf{100\%}$ \textbf{Zero Leakage} \\
 100k Token Saturation Index & $\mathcal{O}(T)$ VRAM OOM & 0.62 (Unstable Drift) & \textbf{0.14 (Bounded)} & $\mathbf{4.4\times}$ \textbf{Stability Bound} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table*}
 
 \paragraph{Raw Empirical Analysis.}
@@ -410,6 +414,7 @@ To pressure-test \textsc{Hokie-LM} against the most demanding evaluation standar
 \small
 \caption{\textbf{SOTA State Space and Linear Sequence Models Head-to-Head Benchmark Matrix (350M ISO-Parameter Scale).}}
 \label{tab:sota_ssm_matrix}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Model Architecture} & \textbf{MQAR (16k Tokens)} & \textbf{CD-NIAH Overwrite} & \textbf{100-Turn Persona} & \textbf{Inference Memory} & \textbf{Reasoning FLOPs Ratio} \\
@@ -421,7 +426,8 @@ RWKV-6 (Finch) & 59.8\% & 36.4\% & 38.0\% & 64.0 KB ($\mathcal{O}(1)$) & $14.80\
 \midrule
 \textbf{Hokie-LM (Ours with CAFE)} & 81.2\% & \textbf{99.4\%} & \textbf{96.2\%} & \textbf{17.0 KB ($\mathcal{O}(1)$)} & $\mathbf{1.25\times}$ \textbf{(Zero-Token)} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table*}
 
 \paragraph{Key Empirical Findings.}

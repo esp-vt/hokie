@@ -14,6 +14,13 @@ At step $t$, given input token $x_t \in \mathcal{X}$, \textsc{Hokie-LM} updates 
 \end{align}
 where $z_t \in \Delta^{N_{\mathrm{cat}} \times K_{\mathrm{cls}}}$ is sampled via the Straight-Through (ST) Gumbel-Softmax estimator during training, and $\mathbf{A}_t^{\mathrm{active}}$ is modulated by the Cognitive Active Forgetting Engine (CAFE).
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/fig1_surprise_heatmap.png}
+    \caption{\textbf{Surprise-Driven Dynamic Memory Gating in Hokie-LM.} The surprise metric $\gamma_t = \mathcal{D}_{\mathrm{KL}}(q \parallel p)$ measures information novelty, automatically spiking at critical entities, values, and query tokens, while suppressing memory churn on routine stopwords.}
+    \label{fig:surprise_heatmap}
+\end{figure}
+
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{figures/fig19_state_space_cafe_dataflow.png}

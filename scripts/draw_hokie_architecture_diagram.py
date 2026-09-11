@@ -480,11 +480,27 @@ def render_classic_single_plate_true():
 
     out_dir = "/home/eun/neuroworld_lm/figures"
     plate_path = os.path.join(out_dir, "hokie_architecture_classic_plate.png")
+    plate_pdf = os.path.join(out_dir, "hokie_architecture_classic_plate.pdf")
+    plate_svg = os.path.join(out_dir, "hokie_architecture_classic_plate.svg")
     plt.savefig(plate_path, dpi=300, bbox_inches='tight')
-    plt.savefig(os.path.join(out_dir, "hokie_architecture_classic_plate.pdf"), format='pdf', bbox_inches='tight')
-    plt.savefig(os.path.join(out_dir, "hokie_architecture_classic_plate.svg"), format='svg', bbox_inches='tight')
+    plt.savefig(plate_pdf, format='pdf', bbox_inches='tight')
+    plt.savefig(plate_svg, format='svg', bbox_inches='tight')
     plt.close()
-    print(f"[✓] Classic True Plate Diagram saved to: {plate_path}")
+
+    # Overwrite fig1_model_architecture with single-column plate
+    fig1_png = os.path.join(out_dir, "fig1_model_architecture.png")
+    fig1_pdf = os.path.join(out_dir, "fig1_model_architecture.pdf")
+    shutil.copy2(plate_png if 'plate_png' in locals() else plate_path, fig1_png)
+    shutil.copy2(plate_pdf, fig1_pdf)
+
+    paper_fig_dir = "/home/eun/neuroworld_lm/paper/figures"
+    if os.path.exists(paper_fig_dir):
+        shutil.copy2(plate_path, os.path.join(paper_fig_dir, "hokie_architecture_classic_plate.png"))
+        shutil.copy2(plate_pdf, os.path.join(paper_fig_dir, "hokie_architecture_classic_plate.pdf"))
+        shutil.copy2(fig1_png, os.path.join(paper_fig_dir, "fig1_model_architecture.png"))
+        shutil.copy2(fig1_pdf, os.path.join(paper_fig_dir, "fig1_model_architecture.pdf"))
+
+    print(f"[✓] Classic Single-Column Plate saved to: {plate_path} and synced to {fig1_png}")
 
 if __name__ == "__main__":
     render_true_architecture()

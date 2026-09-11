@@ -45,6 +45,7 @@ Table~\ref{tab:hyperparameters} outlines the complete architectural, optimizer, 
 \small
 \caption{\textbf{Comprehensive Model Hyperparameters \& Training Configurations.}}
 \label{tab:hyperparameters}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{llc}
 \toprule
 \textbf{Category} & \textbf{Hyperparameter} & \textbf{Value} \\
@@ -74,7 +75,8 @@ Table~\ref{tab:hyperparameters} outlines the complete architectural, optimizer, 
  & Memory Bandwidth & 3.35 TB/s (HBM3) \\
  & Software Stack & PyTorch 2.5 + Triton 3.1 + CUDA 13.0 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 % ==============================================================================

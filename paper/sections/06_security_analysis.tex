@@ -115,7 +115,7 @@ To empirically validate Theorem~\ref{thm:zero_leakage}, we deployed five distinc
 \label{tab:security_probes}
 \centering
 \small
-\setlength{\tabcolsep}{4.5pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Probe Architecture} & \textbf{Transformer} & \textbf{Mamba-2} & \textbf{Grad. Ascent} & \textbf{Hokie CAFE} \\
@@ -129,7 +129,8 @@ To empirically validate Theorem~\ref{thm:zero_leakage}, we deployed five distinc
 \textbf{Retained General Acc.} & 100.0\% & 82.4\% & 81.5\% & \textbf{100.0\%} \\
 \textbf{Execution Time} & N/A & N/A & 48.5 s & \textbf{184.3 ms} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 As summarized in Table~\ref{tab:security_probes}, while standard gradient-ascent unlearning allows an 8-layer deep ResNet probe to recover secrets with 68.5\% accuracy (and degrades general knowledge to 81.5\%), \textsc{Hokie-LM}'s CAFE achieves an exact \textbf{50.0\% binary probe accuracy (equivalent to random guessing, 0.0\% information leakage)} while preserving \textbf{100.0\% of orthogonal general knowledge} in just \textbf{184.3 ms}.
