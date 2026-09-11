@@ -5,25 +5,31 @@
 \subsection{Proof of Theorem 1 (Variational Regret Bound)}
 \begin{proof}
 Consider partitioning the full sequence $1:T$ into $|\mathcal{T}^*| + 1$ stationary epochs $I_k = [t_k^*, t_{k+1}^*-1]$.
-Within each stationary regime $I_k$, the conditional token transition is predictable from context, yielding $D_{\text{KL}}(q \parallel p) = \gamma_t \le \epsilon$. The modulation gate $g_t = \sigma(\gamma_t)$ keeps the forgetting factor $\rho(\mathbf{A}_t)$ strictly uniform, bounding intra-epoch prediction error by $\sum_{t \in I_k} \gamma_t$.
-At each semantic change-point $t_k^* \in \mathcal{T}^*$, incoming evidence induces a surprise spike $\gamma_{t_k^*} \gg 0$, scaling $\tilde{\mathbf{B}}_{t_k^*}$ by $(1 + \sigma(\gamma_{t_k^*}))$. This instantaneously re-allocates sufficient statistics into the hidden state $h_{t_k^*}$ with bounded regret $\mathcal{O}(d_{\text{model}} \log T)$. Summing over all change-points and stationary epochs yields the stated regret bound.
+Within each stationary regime $I_k$, the conditional token transition is predictable from context, yielding $\mathcal{D}_{\mathrm{KL}}(q \parallel p) = \gamma_t \le \epsilon$. The modulation gate $g_t = \sigma(\gamma_t)$ keeps the forgetting factor $\rho(\mathbf{A}_t)$ strictly uniform, bounding intra-epoch prediction error by $\sum_{t \in I_k} \gamma_t$.
+At each semantic change-point $t_k^* \in \mathcal{T}^*$, incoming evidence induces a surprise spike $\gamma_{t_k^*} \gg 0$, scaling $\tilde{\mathbf{B}}_{t_k^*}$ by $(1 + \sigma(\gamma_{t_k^*}))$. This instantaneously re-allocates sufficient statistics into the hidden state $h_{t_k^*}$ with bounded regret $\mathcal{O}(d_{\mathrm{model}} \log T)$. Summing over all change-points and stationary epochs yields the stated regret bound.
 \end{proof}
 
 \subsection{Proof of Theorem 2 (Stability of Deep Rollout)}
 \begin{proof}
 Unrolling the recurrent state transition for $K$ steps:
 \begin{equation}
-    h_{t+K} = \left(\prod_{j=1}^K \mathbf{A}_{t+j}\right) h_t + \sum_{k=1}^K \left(\prod_{j=k+1}^K \mathbf{A}_{t+j}\right) \mathbf{B}_z z_{t+k}
+\begin{split}
+    h_{t+K} &= \left(\prod_{j=1}^K \mathbf{A}_{t+j}\right) h_t \\
+    &\quad + \sum_{k=1}^K \left(\prod_{j=k+1}^K \mathbf{A}_{t+j}\right) \mathbf{B}_z z_{t+k}
+\end{split}
 \end{equation}
 Applying the triangle inequality and sub-multiplicativity of matrix norms:
 \begin{equation}
-    \|h_{t+K}\| \le \rho(\mathbf{A})^K \|h_t\| + \|\mathbf{B}_z\| \|z_{\text{max}}\| \sum_{k=0}^{K-1} \rho(\mathbf{A})^k
+\begin{split}
+    \|h_{t+K}\| &\le \rho(\mathbf{A})^K \|h_t\| \\
+    &\quad + \|\mathbf{B}_z\| \|z_{\mathrm{max}}\| \sum_{k=0}^{K-1} \rho(\mathbf{A})^k
+\end{split}
 \end{equation}
 Substituting the spectral bound $\rho(\mathbf{A}) \le 1 - \epsilon$:
 \begin{equation}
     \sum_{k=0}^{K-1} (1 - \epsilon)^k = \frac{1 - (1 - \epsilon)^K}{\epsilon}
 \end{equation}
-Since Categorical Gumbel-Softmax variables are simplex-constrained ($\|z_{\text{max}}\| \le 1$), $\|h_{t+K}\|$ is bounded by $(1 - \epsilon)^K \|h_t\| + \frac{L_z}{\epsilon} (1 - (1 - \epsilon)^K)$. As $K \rightarrow \infty$, the first term vanishes and the second term converges to $\frac{L_z}{\epsilon} < \infty$.
+Since Categorical Gumbel-Softmax variables are simplex-constrained ($\|z_{\mathrm{max}}\| \le 1$), $\|h_{t+K}\|$ is bounded by $(1 - \epsilon)^K \|h_t\| + \frac{L_z}{\epsilon} (1 - (1 - \epsilon)^K)$. As $K \rightarrow \infty$, the first term vanishes and the second term converges to $\frac{L_z}{\epsilon} < \infty$.
 \end{proof}
 
 % ==============================================================================
@@ -43,7 +49,7 @@ Table~\ref{tab:hyperparameters} outlines the complete architectural, optimizer, 
 \toprule
 \textbf{Category} & \textbf{Hyperparameter} & \textbf{Value} \\
 \midrule
-\multirow{5}{*}{Architecture} 
+\multirow{6}{*}{Architecture} 
  & Hidden Dimension ($d_{\text{model}}$) & 128 (Bench) / 512 (NLP) \\
  & State Dimension ($d_{\text{state}}$) & 16 \\
  & Number of Layers ($N_{\text{layers}}$) & 2 / 6 / 32 \\

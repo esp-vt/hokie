@@ -20,11 +20,14 @@ A fundamental security concern in deployed language models is whether an adversa
 \subsubsection{Inversion Dynamics in Standard Transformers}
 In a standard Transformer, output logits at step $t$ are computed via:
 \begin{equation}
-    \hat{\mathbf{y}}_t = \mathbf{W}_{\mathrm{head}} \cdot \mathrm{LayerNorm}\left( \sum_{i=1}^t \alpha_{t,i} \mathbf{v}_i \mathbf{W}_O \right)
+    \hat{\mathbf{y}}_t = \mathbf{W}_{\mathrm{head}} \cdot \mathrm{LN}\left( \sum_{i=1}^t \alpha_{t,i} \mathbf{v}_i \mathbf{W}_O \right)
 \end{equation}
 where $\alpha_{t,i} = \frac{\exp(\mathbf{q}_t \mathbf{k}_i^\top / \sqrt{d})}{\sum_m \exp(\mathbf{q}_t \mathbf{k}_m^\top / \sqrt{d})}$. Because all past key-value vectors $\{\mathbf{k}_i, \mathbf{v}_i\}_{i=1}^t$ are preserved in uncompressed form in the KV cache, the gradient of the output logit with respect to any individual prefix embedding $\mathbf{e}_i = \mathbf{W}_{\mathrm{embed}}[x_i]$ satisfies:
 \begin{equation}
-    \frac{\partial \hat{\mathbf{y}}_t}{\partial \mathbf{e}_i} = \alpha_{t,i} \mathbf{W}_{\mathrm{head}} \frac{\partial \mathrm{LN}}{\partial \mathbf{h}_t} \mathbf{W}_O^\top \mathbf{W}_V^\top + \mathcal{O}\left( \frac{\partial \alpha_{t,i}}{\partial \mathbf{e}_i} \right) \neq \mathbf{0}
+\begin{split}
+    \frac{\partial \hat{\mathbf{y}}_t}{\partial \mathbf{e}_i} &= \alpha_{t,i} \mathbf{W}_{\mathrm{head}} \frac{\partial \mathrm{LN}}{\partial \mathbf{h}_t} \mathbf{W}_O^\top \mathbf{W}_V^\top \\
+    &\quad + \mathcal{O}\left( \frac{\partial \alpha_{t,i}}{\partial \mathbf{e}_i} \right) \neq \mathbf{0}
+\end{split}
 \end{equation}
 Because $\alpha_{t,i} > 0$ strictly holds for all $i \in [1, t]$, gradient-based optimization $\arg\min_{\tilde{\mathbf{e}}} \|\mathcal{M}(\tilde{\mathbf{e}}) - \hat{\mathbf{y}}_t\|_2^2$ enables efficient reconstruction of prompt tokens, particularly when combined with tied embedding matrices ($\mathbf{W}_{\mathrm{head}} = \mathbf{W}_{\mathrm{embed}}^\top$).
 
@@ -35,7 +38,10 @@ In \textsc{Hokie-LM}, the recurrent state update over sequence length $L$ compre
 \label{thm:inversion_hardness}
 Let $\mathcal{F}: \mathcal{V}^L \rightarrow \mathbb{R}^{d_{\mathrm{model}} \times d_{\mathrm{state}}}$ denote the sequence-to-state mapping under selective continuous SSM dynamics:
 \begin{equation}
-    \mathbf{h}_t = \bar{\mathbf{A}}_t \mathbf{h}_{t-1} + \bar{\mathbf{B}}_t \tilde{\mathbf{x}}_t, \quad \bar{\mathbf{A}}_t = \exp(-\Delta t(\tilde{\mathbf{x}}_t) \cdot \mathbf{A})
+\begin{split}
+    \mathbf{h}_t &= \bar{\mathbf{A}}_t \mathbf{h}_{t-1} + \bar{\mathbf{B}}_t \tilde{\mathbf{x}}_t, \\
+    \bar{\mathbf{A}}_t &= \exp(-\Delta t(\tilde{\mathbf{x}}_t) \cdot \mathbf{A})
+\end{split}
 \end{equation}
 For sequence length $L > \frac{d_{\mathrm{state}} \cdot d_{\mathrm{model}}}{\log |\mathcal{V}|}$, the pre-image set $\mathcal{F}^{-1}(\mathbf{h}_t) = \{\mathbf{x} \in \mathcal{V}^L \mid \mathcal{F}(\mathbf{x}) = \mathbf{h}_t\}$ has cardinality:
 \begin{equation}
@@ -43,7 +49,9 @@ For sequence length $L > \frac{d_{\mathrm{state}} \cdot d_{\mathrm{model}}}{\log
 \end{equation}
 Furthermore, the output projection is non-linearly gated:
 \begin{equation}
-    \mathbf{y}_t = \left( \sum_{s=1}^{d_{\mathrm{state}}} \mathbf{h}_{t,s} \mathbf{C}_{t,s} + \mathbf{D} \tilde{\mathbf{x}}_t \right) \odot \mathrm{SiLU}(\mathbf{z}_t)
+\begin{split}
+    \mathbf{y}_t &= \left( \sum_{s=1}^{d_{\mathrm{state}}} \mathbf{h}_{t,s} \mathbf{C}_{t,s} + \mathbf{D} \tilde{\mathbf{x}}_t \right) \odot \mathrm{SiLU}(\mathbf{z}_t)
+\end{split}
 \end{equation}
 where $\mathbf{z}_t = \mathbf{W}_z \tilde{\mathbf{x}}_t$. The Hadamard product with $\mathrm{SiLU}(\mathbf{z}_t)$ induces a non-convex optimization surface with exponentially many spurious local minima, rendering exact analytical inversion of $\mathbf{x}_{<t}$ NP-hard in the sequence length $L$.
 \end{theorem}
@@ -61,18 +69,25 @@ When confidential data (e.g., API keys, passwords, or PII) must be purged under 
 
 Let $\mathbf{V} \in \mathbb{R}^{K \times d_{\mathrm{model}}}$ represent the orthonormal basis spanning the $K$-token embedding subspace of the confidential entity:
 \begin{equation}
+\begin{split}
     \mathbf{P}_{\perp} = \mathbf{I}_{d_{\mathrm{model}}} - \mathbf{V}^\top (\mathbf{V} \mathbf{V}^\top)^{-1} \mathbf{V}
+\end{split}
 \end{equation}
 
 \begin{theorem}[Zero Information Leakage under Arbitrary Non-Linear Probing]
 \label{thm:zero_leakage}
 Let $\mathbf{h} \in \mathbb{R}^{d_{\mathrm{model}} \times d_{\mathrm{state}}}$ denote the working memory state containing secret feature vector $\mathbf{v}_{\mathrm{secret}} \in \mathrm{span}(\mathbf{V})$. Applying the multi-scale projection $\mathbf{h}^* = \mathbf{P}_{\perp} \mathbf{h}$ yields a state satisfying:
 \begin{equation}
-    \langle \mathbf{v}_{\mathrm{secret}}, \mathbf{h}^* \rangle = \mathbf{v}_{\mathrm{secret}}^\top \left( \mathbf{I} - \mathbf{V}^\top (\mathbf{V}\mathbf{V}^\top)^{-1}\mathbf{V} \right) \mathbf{h} = \mathbf{0}
+\begin{split}
+    \langle \mathbf{v}_{\mathrm{secret}}, \mathbf{h}^* \rangle &= \mathbf{v}_{\mathrm{secret}}^\top \left( \mathbf{I} - \mathbf{V}^\top (\mathbf{V}\mathbf{V}^\top)^{-1}\mathbf{V} \right) \mathbf{h} \\
+    &= \mathbf{0}
+\end{split}
 \end{equation}
 Consequently, for any parameterized adversarial probe $\psi_\phi: \mathbb{R}^{d_{\mathrm{model}} \times d_{\mathrm{state}}} \rightarrow \mathcal{Y}$, the mutual information between the secret label $Y_{\mathrm{secret}}$ and the cleansed representation $\mathbf{h}^*$ is identically zero:
 \begin{equation}
+\begin{split}
     I(Y_{\mathrm{secret}}; \mathbf{h}^*) \equiv 0 \quad \text{and} \quad I(Y_{\mathrm{secret}}; \hat{\mathbf{y}}_t(\mathbf{h}^*)) \equiv 0
+\end{split}
 \end{equation}
 \end{theorem}
 

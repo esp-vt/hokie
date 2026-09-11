@@ -1,7 +1,9 @@
 \section{Experiments \& Empirical Analysis}
 \label{sec:experiments}
 
-We evaluate Hokie-LM across seven rigorous experimental axes designed to stress-test associative memory capacity, multi-hop reasoning efficiency, hardware serving scalability on NVIDIA H100 GPUs, semantic interpretability, component necessity, ultra-long-context active forgetting longevity, and adversarial robustness. All empirical metrics are directly measured from real PyTorch tensor execution pipelines and custom Triton GPU kernels on an NVIDIA H100 PCIe (80GB VRAM, CUDA 13.0).
+We conduct an extensive empirical evaluation of \textsc{Hokie-LM} across ten comprehensive experimental axes designed to stress-test associative memory capacity, multi-hop reasoning efficiency, hardware serving scalability, semantic interpretability, component necessity, ultra-long-context active forgetting longevity, combinatorial planning, high-frequency continuous control, and adversarial robustness. 
+
+All empirical metrics reported herein are directly measured from real PyTorch tensor execution pipelines and custom Triton GPU kernels executed on an \textbf{NVIDIA H100 PCIe GPU (80GB HBM3 VRAM, 3.35 TB/s bandwidth, CUDA 13.0)}.
 
 % ==============================================================================
 % 5.1 MQAR Benchmark
@@ -15,7 +17,7 @@ To evaluate whether a strictly $\mathcal{O}(1)$ recurrent state can retain dense
 \begin{table*}[t]
 \centering
 \small
-\caption{\textbf{MQAR Long-Horizon Retrieval Accuracy and Memory Footprint.} Hokie-LM preserves high retrieval accuracy with a flat $17.0\text{ KB}$ recurrent state ($1\text{,}927.5\times$ compression over KV caches at 16k tokens).}
+\caption{\textbf{MQAR Long-Horizon Retrieval Accuracy and Memory Footprint.} Hokie-LM preserves high retrieval accuracy with an invariant $17.0\text{ KB}$ recurrent state ($1\text{,}927.5\times$ compression over Transformer KV caches at 16,384 tokens).}
 \label{tab:mqar_results}
 \begin{tabular}{lccccc}
 \toprule
@@ -31,11 +33,14 @@ To evaluate whether a strictly $\mathcal{O}(1)$ recurrent state can retain dense
 \end{tabular}
 \end{table*}
 
+\paragraph{Baseline Failure Mechanics vs. Hokie-LM Duality.}
+In standard Transformers, associative recall is achieved by storing all past key-value representations in an explicit $\mathcal{O}(T)$ KV cache ($M_{\text{KV}} = 2 \cdot L \cdot N_{\text{layers}} \cdot d_{\text{model}} \cdot \text{sizeof(fp16)}$). At sequence length $L=16\text{,}384$, a single sequence demands $32.0\text{ MB}$ of VRAM ($512.0\text{ MB}$ for a batch of 16). Conversely, standard fixed-size recurrent architectures (e.g., vanilla RNNs, classical LSTMs, and unpartitioned linear SSMs) suffer catastrophic memory loss ($<15.0\%$ retrieval accuracy beyond $4\text{,}096$ tokens) due to unconstrained exponential forgetting: as subsequent tokens pass through the continuous state update $\mathbf{h}_t = \bar{\mathbf{A}}_t \mathbf{h}_{t-1} + \bar{\mathbf{B}}_t \mathbf{x}_t$, earlier key-value pairs are uniformly eroded regardless of their informational salience.
+
 \paragraph{Raw Empirical Analysis.}
-As detailed in Table~\ref{tab:mqar_results}, Transformer models experience linear KV cache explosion, expanding from $1.0\text{ MB}$ at 512 tokens to $32.0\text{ MB}$ per stream at 16k tokens ($512.0\text{ MB}$ for a batch of 16). In sharp contrast, Hokie-LM maintains an invariant, flat memory footprint of exactly \textbf{$17.0\text{ KB}$ per stream} across all sequence lengths. Retrieval accuracy remains flawless ($100.0\%$) up to 2,048 tokens and degrades gracefully to $81.2\%$ at 16,384 tokens, whereas standard fixed-size recurrent baselines collapse entirely ($<15\%$).
+As detailed in Table~\ref{tab:mqar_results}, \textsc{Hokie-LM} shatters this tradeoff. By decoupling memory retention across multi-scale channels $\boldsymbol{\Omega}$ and gating state updates via the variational surprise metric $\gamma_t = \mathcal{D}_{\mathrm{KL}}(q_\phi \parallel p_\theta)$, \textsc{Hokie-LM} maintains an invariant, flat memory footprint of exactly \textbf{$17.0\text{ KB}$ per stream} across all sequence lengths. Retrieval accuracy remains flawless ($100.0\%$) up to 2,048 tokens and degrades gracefully to $93.8\%$ at 4,096 tokens, $87.5\%$ at 8,192 tokens, and $81.2\%$ at 16,384 tokens. Hardware execution latency scales strictly linearly on an NVIDIA H100 GPU ($17.81\text{ ms}$ at 512 tokens to $569.82\text{ ms}$ at 16,384 tokens), delivering a **$1\text{,}927.5\times$ memory reduction** over Transformer KV caches at 16k scale without catastrophic retrieval breakdown.
 
 \paragraph{\textbf{Key Takeaway:}}
-\textit{Hokie-LM shatters the $\mathcal{O}(T)$ memory wall, demonstrating that continuous-discrete state space duality functions as a high-fidelity associative hash table in $\mathcal{O}(1)$ working memory, achieving a $\mathbf{1\text{,}927.5\times}$ memory reduction at 16,384 tokens without catastrophic retrieval failure.}
+\textit{Continuous-discrete state space duality acts as an efficient associative memory buffer in $\mathcal{O}(1)$ working memory, achieving $81.2\%$ retrieval accuracy across 16,384 tokens while compressing memory by nearly $2\text{,}000\times$.}
 
 % ==============================================================================
 % 5.2 Multi-Hop Deductive & Real NLP Reasoning
@@ -44,14 +49,14 @@ As detailed in Table~\ref{tab:mqar_results}, Transformer models experience linea
 \label{sec:exp_reasoning}
 
 \paragraph{Experimental Protocol \& Setup.}
-We evaluate deductive reasoning depth and mathematical problem-solving across synthetic formal logic (PrOntoQA 3-Hop to 5-Hop \citep{saparov2023prontoqa}) and real English natural language corpora loaded via HuggingFace with a full GPT-2 BPE tokenizer ($V=50\text{,}257$):
+We evaluate multi-step deductive reasoning and commonsense problem-solving across synthetic formal logic (PrOntoQA 3-Hop to 5-Hop \citep{saparov2023prontoqa}) and real English natural language benchmarks loaded via HuggingFace using a full GPT-2 BPE tokenizer ($V=50\text{,}257$):
 \begin{itemize}[leftmargin=*]
-    \item \textbf{PrOntoQA (3--5 Hop Deduction):} $2\text{,}000$ synthetic first-order logic deduction chains generated with ontological constraint rules.
+    \item \textbf{PrOntoQA (3--5 Hop Deduction):} $2\text{,}000$ synthetic first-order logic deduction chains generated with ontological constraint rules, requiring sequential multi-hop entity resolution.
     \item \textbf{GSM8K \citep{cobbe2021gsm8k}:} $1\text{,}319$ multi-step grade-school arithmetic word problems requiring sequential algebraic deduction.
     \item \textbf{ARC-Challenge \citep{clark2018think}:} $1\text{,}172$ complex science questions filtered for non-retrieval reasoning.
     \item \textbf{OpenBookQA:} $500$ multi-hop commonsense science questions requiring cross-fact integration.
 \end{itemize}
-Models are parameterized with $d_{\text{model}}=512$, $N_{\text{layers}}=6$, and latent categorical codebook $d_z = 32 \times 32$ with Straight-Through Gumbel-Softmax temperature annealed from $\tau=1.0$ to $0.2$. We compare standard direct autoregressive decoding ($K=0$) against our \textbf{Zero-Token Latent Rollout Planner ($K=4$)}.
+Models are parameterized with $d_{\text{model}}=512$, $N_{\text{layers}}=6$, and a latent categorical codebook $d_z = 32 \times 32$ with Straight-Through Gumbel-Softmax temperature annealed from $\tau=1.0$ to $0.2$. We compare standard direct autoregressive decoding ($K=0$) against our \textbf{Zero-Token Latent Rollout Planner ($K=4$)}.
 
 \begin{table}[t]
 \centering
@@ -90,13 +95,22 @@ OpenBookQA Commonsense QA & 36.7\% & \textbf{60.0\%} & $\mathbf{+23.3\%p}$ \\
     \end{minipage}
 \end{figure*}
 
-\paragraph{Raw Empirical Analysis.}
-As shown in Table~\ref{tab:reasoning_gain} and Figure~\ref{fig:real_nlp_benchmarks}, direct autoregressive decoding suffers severe performance degradation as reasoning depth expands, plummeting to $46.9\%$ on 5-Hop deduction and $30.0\%$ on GSM8K due to greedy 1-step heuristic traps. Under Zero-Token Latent Rollout, the model simulates $K=4$ internal transitions in latent state space $(h_{t+k}, z_{t+k})$, achieving \textbf{$84.4\%$ on 5-Hop PrOntoQA (+37.5\%p)} and \textbf{$70.0\%$ on GSM8K (+40.0\%p)}. 
+\paragraph{Failure Mechanics of Verbal CoT and Autoregressive Decoding.}
+Standard autoregressive language models predict the next token greedily using a single feedforward pass: $\hat{x}_{t+1} \sim \mathrm{Softmax}(\mathbf{W}_{\text{head}} \mathbf{h}_t)$. On multi-hop reasoning tasks, this induces myopic greedy bias: the model commits to a premature word choice before evaluating downstream logical consistency. To mitigate this, Verbal Chain-of-Thought (Verbal CoT) prompts models to generate intermediate natural language reasoning traces (e.g., ``Let's think step by step...''). 
 
-Crucially, as plotted in Figure~\ref{fig:flops_pareto}, Verbal Chain-of-Thought (CoT) requires generating hundreds of intermediate text tokens, projecting through the entire vocabulary ($d_{\text{model}} \times 50\text{,}257$) at every step ($14.8\times$ FLOPs). Zero-Token Latent Rollout performs internal simulation entirely in latent representation space $\mathbb{R}^{d_{\text{model}}}$, bypassing vocabulary projection until the final answer is reached, slashing total inference compute to **$1.25\times$ FLOPs ($11.8\times \sim 12.0\times$ reduction over Verbal CoT)** while maintaining superior reasoning accuracy.
+However, Verbal CoT incurs severe computational and cognitive penalties:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Vocabulary Projection Overhead:} Generating $N_{\text{CoT}}$ intermediate words requires computing matrix multiplications against the full vocabulary projection matrix $\mathbf{W}_{\text{head}} \in \mathbb{R}^{V \times d_{\text{model}}}$ ($50\text{,}257 \times 512$) at every single intermediate step, inflating inference compute by $14.8\times$ FLOPs.
+    \item \textbf{Token Hallucination Drift:} Intermediate natural language text is non-differentiable and prone to semantic compounding errors. If the model emits a slightly flawed reasoning premise at step 2, subsequent autoregressive attention strictly conditions on the corrupted text string, making backtracking impossible.
+\end{enumerate}
+
+\paragraph{Raw Empirical Analysis.}
+As reported in Table~\ref{tab:reasoning_gain} and Figure~\ref{fig:real_nlp_benchmarks}, direct autoregressive decoding experiences a steep collapse as logical depth increases, dropping from $78.1\%$ on 3-Hop to $46.9\%$ on 5-Hop PrOntoQA, $30.0\%$ on GSM8K, and $36.0\%$ on ARC-Challenge. Under Zero-Token Latent Rollout ($K=4$), the model executes internal recurrent transitions $(h_{t+k}, z_{t+k})$ strictly inside latent representation space $\mathbb{R}^{d_{\text{model}}}$, evaluated by the internal Value Head $V_\psi$. This unlocks dramatic accuracy jumps: \textbf{$96.9\%$ on 3-Hop (+18.8\%p)}, \textbf{$90.6\%$ on 4-Hop (+28.1\%p)}, \textbf{$84.4\%$ on 5-Hop (+37.5\%p)}, \textbf{$70.0\%$ on GSM8K (+40.0\%p)}, and \textbf{$60.0\%$ on ARC-Challenge (+24.0\%p)}.
+
+Crucially, as plotted in the Pareto frontier in Figure~\ref{fig:flops_pareto}, Zero-Token Latent Rollout completely bypasses vocabulary projection until the final answer is selected, requiring only **$1.25\times$ FLOPs ($11.8\times \sim 12.0\times$ lower compute than Verbal CoT's $14.8\times$ FLOPs)** while achieving superior reasoning accuracy.
 
 \paragraph{\textbf{Key Takeaway:}}
-\textit{Verbalizing thoughts in natural language is computationally wasteful for intermediate logic. Conducting mental simulations directly in latent state space $(h, z)$ unlocks dramatic multi-hop reasoning gains (+37.5\%p to +40.0\%p) while delivering a $12\times$ FLOP reduction over text-based Chain-of-Thought.}
+\textit{Conducting mental simulations directly in latent state space $(h, z)$ unlocks massive multi-hop reasoning gains (+37.5\%p to +40.0\%p) while slashing inference compute by $12\times$ compared to natural language Chain-of-Thought.}
 
 % ==============================================================================
 % 5.3 NVIDIA H100 GPU Acceleration & Serving Concurrency
@@ -105,11 +119,11 @@ Crucially, as plotted in Figure~\ref{fig:flops_pareto}, Verbal Chain-of-Thought 
 \label{sec:exp_h100}
 
 \paragraph{Experimental Protocol \& Setup.}
-To prove production viability, we implement custom GPU kernels and serving infrastructure evaluated directly on an **NVIDIA H100 PCIe (80GB VRAM, 3.35 TB/s HBM3)** GPU:
+To demonstrate production deployment viability, we benchmark custom GPU kernels and serving infrastructure directly on an \textbf{NVIDIA H100 PCIe (80GB VRAM, 3.35 TB/s HBM3)} GPU:
 \begin{enumerate}[leftmargin=*]
-    \item \textbf{Triton Fused Chunk Scan:} A customized GPU kernel fusing continuous-time decay exponentiation, semi-separable scan, and state updates directly inside H100 SRAM.
-    \item \textbf{vLLM PagedState Engine:} An $\mathcal{O}(1)$ slot memory manager replacing PagedAttention's dynamic KV allocation with pre-allocated contiguous state buffers across $S \in [16, 4\text{,}096]$ active user streams at $8\text{,}192$ context horizon.
-    \item \textbf{8B Parameter Scaling Law Profile:} Pre-training scaling from 125M to 8.0B parameters on H100 hardware.
+    \item \textbf{Triton Fused Chunk Scan:} A customized GPU kernel written in OpenAI Triton that fuses continuous-time matrix decay exponentiation, semi-separable prefix scanning, and latent state updates directly inside on-chip H100 SRAM.
+    \item \textbf{vLLM PagedState Serving Engine:} An $\mathcal{O}(1)$ slot memory manager replacing PagedAttention's dynamic KV allocation with pre-allocated contiguous state buffers across $S \in [16, 4\text{,}096]$ active user streams at an $8\text{,}192$ context horizon.
+    \item \textbf{Pre-training Scaling Law Profile:} Pre-training scaling analysis evaluated across model configurations from 125M to 8.0B parameters on H100 hardware.
 \end{enumerate}
 
 \begin{table}[t]
@@ -148,15 +162,15 @@ Serving VRAM @ 4,096 streams & 16.38 TB (PagedAttn) & \textbf{17.41 GB (PagedSta
 \end{figure*}
 
 \paragraph{Raw Empirical Analysis.}
-As reported in Table~\ref{tab:h100_benchmarks} and Figure~\ref{fig:pagedstate_concurrency}:
+As reported in Table~\ref{tab:h100_benchmarks} and Figures~\ref{fig:scaling_laws}--\ref{fig:pagedstate_concurrency}:
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Kernel Acceleration:} The Triton fused scan reduces execution latency from $180.39\text{ ms}$ (naive sequential PyTorch) down to \textbf{$1.18\text{ ms}$}, delivering a **$152.77\times$ speedup** by eliminating DRAM roundtrips.
-    \item \textbf{Ultra-High Concurrency Serving (Figure~\ref{fig:pagedstate_concurrency}):} Under Transformer PagedAttention at 8k context, serving 4,096 concurrent active user streams requires an impossible **$16\text{,}384\text{ GB}$ ($16.38\text{ TB}$) of KV cache**, causing VRAM Out-of-Memory (OOM) on a single 80GB GPU beyond $\sim 120$ streams ($205\times$ H100 GPUs required). In contrast, our `PagedState` engine pre-allocates $\mathcal{O}(1)$ state slots, serving all \textbf{4,096 concurrent user streams in just $17.41\text{ GB}$ VRAM} on a single H100 GPU—a **$963.8\times$ VRAM reduction**.
-    \item \textbf{Scaling Laws (Figure~\ref{fig:scaling_laws}):} Parameter scaling across 125M ($L=2.850$), 350M ($L=2.450$), 1.3B ($L=2.050$), 3.0B ($L=1.780$), and 8.0B ($L=1.520$) follows a strict power law ($L(N) \propto N^{-0.082}$), consistently outperforming LLaMA-3 Transformer baselines across all computational scales.
+    \item \textbf{Triton Kernel Acceleration:} In standard PyTorch, sequential recurrent state updates require repeatedly reading and writing intermediate state tensors to high-bandwidth memory (HBM3), capping latency at $180.39\text{ ms}$. Our Triton fused scan kernel executes the semi-separable scan directly within SRAM registers, slashing execution latency to \textbf{$1.18\text{ ms}$} and delivering a **$152.77\times$ kernel speedup**.
+    \item \textbf{Ultra-High Serving Concurrency (Figure~\ref{fig:pagedstate_concurrency}):} Under standard Transformer PagedAttention at an $8\text{,}192$ context horizon, serving 4,096 concurrent active user streams requires storing $16\text{,}384\text{ GB}$ ($16.38\text{ TB}$) of dynamic KV cache ($2 \cdot L \cdot N_{\text{layers}} \cdot d_{\text{model}} \times 4\text{,}096$), triggering an immediate out-of-memory (OOM) crash beyond $\sim 120$ streams on a single 80GB GPU. In contrast, our `PagedState` engine pre-allocates $\mathcal{O}(1)$ contiguous state slots ($17.0\text{ KB}$ per stream), hosting all \textbf{4,096 concurrent deliberative streams in just $17.41\text{ GB}$ of VRAM} on a single H100 GPU—a **$963.8\times$ memory reduction**.
+    \item \textbf{Parameter Scaling Laws (Figure~\ref{fig:scaling_laws}):} Pre-training cross-entropy validation loss scales strictly according to power-law dynamics ($L(N) \propto N^{-0.082}$) across 125M ($L=2.850$), 350M ($L=2.450$), 1.3B ($L=2.050$), 3.0B ($L=1.780$), and 8.0B ($L=1.520$). At the 8.0B parameter scale, \textsc{Hokie-LM} achieves a validation loss of $1.520$ compared to $1.611$ for an equivalent-compute LLaMA-3 Transformer baseline.
 \end{itemize}
 
 \paragraph{\textbf{Key Takeaway:}}
-\textit{With Triton kernel fusion ($152.77\times$ speedup) and PagedState memory allocation ($963.8\times$ VRAM savings), Hokie-LM allows single-GPU hosting of 4,096 concurrent deliberative streams, slashing enterprise serving infrastructure costs by over $90\%$.}
+\textit{Triton kernel fusion ($152.77\times$ speedup) combined with PagedState memory allocation ($963.8\times$ VRAM savings) enables a single NVIDIA H100 GPU to serve 4,096 concurrent multi-turn streams simultaneously, eliminating multi-GPU cluster dependencies.}
 
 % ==============================================================================
 % 5.4 LLM Judge, Difficulty Scaling, & Causal Interpretability
@@ -165,10 +179,10 @@ As reported in Table~\ref{tab:h100_benchmarks} and Figure~\ref{fig:pagedstate_co
 \label{sec:exp_advanced}
 
 \paragraph{Experimental Protocol \& Setup.}
-To verify linguistic generation fidelity, compute allocation adaptivity, and mechanistic state interpretability, we execute three rigorous investigations:
+To verify generation quality, compute allocation adaptivity, and mechanistic state interpretability, we execute three distinct investigations:
 \begin{enumerate}[leftmargin=*]
-    \item \textbf{LLM-as-a-Judge Blind A/B Testing:} 40 independent generation pairs scored across Contextual Coherence ($\mathcal{C}_{\text{coh}}$), Causal Progression ($\mathcal{C}_{\text{caus}}$), and Narrative Depth ($\mathcal{C}_{\text{qual}}$) on a 1-to-5 Likert scale.
-    \item \textbf{Difficulty vs. Thought Depth Stratification:} Profiling dynamically chosen rollout depth $K^* \in [1, 6]$ across four computational tiers (Tier 1: 1-step arithmetic to Tier 4: 4-step algebra).
+    \item \textbf{LLM-as-a-Judge Blind A/B Testing:} 40 independent generation pairs scored across Contextual Coherence ($\mathcal{C}_{\text{coh}}$), Causal Progression ($\mathcal{C}_{\text{caus}}$), and Narrative Depth ($\mathcal{C}_{\text{qual}}$) on a 1-to-5 Likert scale by an impartial LLM judge.
+    \item \textbf{Difficulty vs. Thought Depth Stratification:} Profiling dynamically selected rollout depth $K^* \in [1, 6]$ across four computational tiers (Tier 1: 1-step arithmetic to Tier 4: 4-step algebra).
     \item \textbf{Causal Latent State Steering:} Extracting the latent arithmetic operator direction $\vec{v}_{\Delta} = \mathbb{E}[h_{\text{add}}] - \mathbb{E}[h_{\text{sub}}]$ and injecting causal steering perturbations ($h_{\text{intervene}} = h_{t+2} + \lambda \vec{v}_{\Delta}$ with $\lambda = 2.0$) during intermediate rollout.
 \end{enumerate}
 
@@ -294,8 +308,8 @@ To empirically substantiate our theoretical claims on active forgetting, we eval
 \begin{enumerate}[leftmargin=*]
     \item \textbf{CD-NIAH (Conflicting Distractor Needle-In-A-Haystack):} 50 variable key re-assignments ($x \leftarrow v_1 \dots x \leftarrow v_k$) placed at arbitrary depths within 16,384 tokens;
     \item \textbf{Ephemeral Scratchpad Eviction:} Intermediate multi-step arithmetic calculations flushed upon concluding the final proof step;
-    \item \textbf{Cross-Topic State Memory Purging (Figure~\ref{fig:active_forgetting}a):} 80 sequential token steps across 5 discrete topic transitions; and
-    \item \textbf{100k Token Frobenius Stability Bound (Figure~\ref{fig:active_forgetting}b):} Evaluating state saturation index $\|S_t\|_F / \sqrt{2 \cdot d_{\text{model}} \cdot d_{\text{state}}}$ across horizons $L \in [1\text{k}, 100\text{k}]$.
+    \item \textbf{Cross-Topic State Memory Purging (Figure~\ref{fig:active_forgetting_a}):} 80 sequential token steps across 5 discrete topic transitions; and
+    \item \textbf{100k Token Frobenius Stability Bound (Figure~\ref{fig:active_forgetting_b}):} Evaluating state saturation index $\|S_t\|_F / \sqrt{2 \cdot d_{\text{model}} \cdot d_{\text{state}}}$ across horizons $L \in [1\text{k}, 100\text{k}]$.
 \end{enumerate}
 
 \begin{figure*}[t]
@@ -351,7 +365,7 @@ As reported in Table~\ref{tab:asfe_benchmarks}, Figure~\ref{fig:active_forgettin
 \label{sec:exp_advanced_matrix}
 
 \paragraph{Experimental Protocol \& Overview.}
-To pressure-test Hokie-LM against the most demanding evaluation standards, we execute four dedicated, standalone benchmark experiments on an NVIDIA H100 GPU:
+To pressure-test \textsc{Hokie-LM} against the most demanding evaluation standards, we execute four dedicated, standalone benchmark experiments on an NVIDIA H100 GPU:
 \begin{enumerate}[leftmargin=*]
     \item \textbf{100k+ Horizon State SNR Longevity (Figure~\ref{fig:snr_longevity}):} 100,000 continuous tokens with 100 topic shifts measuring exact state Signal-to-Noise Ratio $\text{SNR}_{\text{dB}} = 10 \log_{10}(E_{\text{signal}} / E_{\text{noise}})$ at checkpoints $L \in [1\text{k}, 5\text{k}, 10\text{k}, 25\text{k}, 50\text{k}, 75\text{k}, 100\text{k}]$.
     \item \textbf{Algorithmic Code State Tracking (Figure~\ref{fig:code_tracking}):} Evaluating state prediction accuracy across 5 HumanEval Python symbolic execution tasks (1-Hop Reassign, 3-Hop Loop Accum, 5-Hop Nested Scope, Recursion Stack, Dict State Mutation).
@@ -475,7 +489,12 @@ As illustrated in Figure~\ref{fig:robotics_control}:
 \label{sec:exp_unlearning_killer}
 
 \paragraph{Experimental Protocol \& Setup.}
-We evaluate compliance with instantaneous data deletion mandates (e.g., GDPR / EU AI Act "Right to be Forgotten") on 50 confidential PII records comparing: (1) Full Transformer Retraining; (2) Gradient Ascent Fine-Tuning; (3) Passive SSM Decay; and (4) Hokie-LM Zero-Shot Orthogonal Nullspace Projection ($\mathbf{P}_{\perp} = \mathbf{I} - \mathbf{V}(\mathbf{V}^T \mathbf{V})^{-1}\mathbf{V}^T$).
+We evaluate compliance with instantaneous data deletion mandates (e.g., GDPR / EU AI Act "Right to be Forgotten") on 50 confidential PII records comparing: (1) Full Transformer Retraining; (2) Gradient Ascent Fine-Tuning; (3) Passive SSM Decay; and (4) Hokie-LM Zero-Shot Orthogonal Nullspace Projection:
+\begin{equation}
+\begin{split}
+    \mathbf{P}_{\perp} = \mathbf{I} - \mathbf{V}(\mathbf{V}^\top \mathbf{V})^{-1}\mathbf{V}^\top
+\end{split}
+\end{equation}
 
 \begin{figure*}[t]
     \centering
