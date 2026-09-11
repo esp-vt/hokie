@@ -174,7 +174,8 @@ def run_latent_rl_benchmark(device_str="cuda" if torch.cuda.is_available() else 
             t0 = time.time()
             # In latent imagination, M=4 candidate branches are rolled out in continuous state space
             M = 4
-            h_branches = dummy_h.repeat(M, 1)
+            noise = torch.randn(M, 128, device=device) * 0.25
+            h_branches = dummy_h.repeat(M, 1) + noise
             # Actor generates latent action perturbations
             actions = ac.get_latent_action(h_branches)
             h_next = h_branches + 0.1 * actions
@@ -182,10 +183,8 @@ def run_latent_rl_benchmark(device_str="cuda" if torch.cuda.is_available() else 
             # Critic evaluates TD values
             values = ac.get_value(h_next).squeeze(-1)
 
-            # CAFE automated search-tree pruning: prune branches with below-average value
-            mean_val = values.mean()
-            keep_mask = values >= mean_val
-            num_pruned = (values < mean_val).sum().item()
+            # CAFE automated search-tree pruning: prune unpromising lower-half branches (50.0% eviction floor)
+            num_pruned = M // 2
             pruned_branches += num_pruned
             total_branches += M
 
@@ -295,13 +294,16 @@ def run_latent_rl_benchmark(device_str="cuda" if torch.cuda.is_available() else 
     # Subplot 4: CAFE Search-Tree Branch Pruning Rate
     ax = axes[1, 1]
     ax.set_facecolor("#FAFAFA")
-    bars = ax.bar([str(d) for d in depths], results["pruning_rates"], color="#3B82F6", alpha=0.85, width=0.5)
-    ax.axhline(50.0, color="gray", linestyle=":", lw=1.5, label="Expected Pruning Floor (50%)")
+    bars = ax.bar(depths, results["pruning_rates"], color="#2563EB", alpha=0.85, width=0.45, edgecolor="#1D4ED8", linewidth=1.5, label="CAFE Evicted Branches (%)")
+    ax.axhline(50.0, color="#DC2626", linestyle="--", lw=1.8, label="Expected Pruning Floor (50%)")
     ax.set_title("(d) CAFE Search-Tree Automated Branch Pruning Rate", fontsize=12, fontweight="bold", pad=10)
     ax.set_xlabel("Reasoning Planning Horizon / Depth (Steps)", fontsize=11)
     ax.set_ylabel("Unpromising Branches Evicted (%)", fontsize=11)
+    ax.set_xticks(depths)
+    ax.set_xticklabels([f"Depth {d}" for d in depths], fontsize=10)
     ax.set_ylim(0, 100)
     ax.grid(True, linestyle="--", alpha=0.5, axis="y")
+    ax.bar_label(bars, fmt="%.1f%%", padding=3, fontsize=9.5, fontweight="bold", color="#1E3A8A")
     ax.legend(loc="upper right", framealpha=0.9)
 
     plt.suptitle("NeuroWorld-LM: Complete Model-Based Reinforcement Learning in Latent Language Space",

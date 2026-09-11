@@ -125,7 +125,7 @@ To prove production viability, we implement custom GPU kernels and serving infra
 Triton Fused Scan Latency & 180.39 ms (PyTorch) & \textbf{1.18 ms (Triton)} & $\mathbf{152.77\times}$ \textbf{Kernel Speedup} \\
 Max Concurrent Serving Streams & $\sim 120$ streams (OOM) & \textbf{4,096 streams} & $\mathbf{34.1\times}$ \textbf{Serving Concurrency} \\
 Serving VRAM @ 4,096 streams & 16.38 TB (PagedAttn) & \textbf{17.41 GB (PagedState)} & $\mathbf{963.8\times}$ \textbf{VRAM Reduction} \\
-8B Model Pretraining Loss & 1.611 (Transformer) & \textbf{1.520 (Hokie-8B)} & \textbf{Superior Power-Law} \\
+8B Model Pretraining Loss & 1.611 (Transformer) & \textbf{1.520 (Hokie-LM 8.0B)} & \textbf{Superior Power-Law} \\
 \bottomrule
 \end{tabular}%
 }

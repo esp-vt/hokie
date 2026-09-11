@@ -425,8 +425,8 @@ def run_and_draw_fig8():
     ax.plot(params, transformer_loss, marker="s", markersize=8.0, color="#E11D48", lw=2.4, linestyle="--", label="Transformer Baseline (LLaMA-3 Architecture)")
     ax.plot(params, hokie_loss, marker="o", markersize=8.5, color="#7C3AED", lw=3.0, label=r"Hokie-LM ($L(N) \propto N^{-0.082}$ Superior Power Law)")
 
-    ax.text(8.0, 1.520 - 0.06, '1.520 (Hokie-8B)', ha='center', va='top', fontsize=9.2, fontweight='bold', color='#7C3AED')
-    ax.text(8.0, 1.611 + 0.06, '1.611 (Transformer)', ha='center', va='bottom', fontsize=9.2, fontweight='bold', color='#E11D48')
+    ax.text(8.0, 1.520 - 0.07, '1.520 (Hokie-LM 8.0B)', ha='center', va='top', fontsize=10.0, fontweight='bold', color='#7C3AED')
+    ax.text(8.0, 1.611 + 0.07, '1.611 (Transformer 8.0B)', ha='center', va='bottom', fontsize=10.0, fontweight='bold', color='#E11D48')
 
     ax.set_xscale('log')
     ax.set_xlabel("Model Parameters (Billions, log scale)", fontsize=12, fontweight="bold")
@@ -434,8 +434,9 @@ def run_and_draw_fig8():
     ax.set_title(r"$\bf{Figure\ 8:}$ Parameter Scaling Laws on NVIDIA H100 Hardware", fontsize=13, pad=12)
     ax.set_xticks(params)
     ax.set_xticklabels(["125M", "350M", "1.3B", "3.0B", "8.0B"], fontweight="bold")
+    ax.set_ylim(1.35, 3.10)
     ax.grid(True, which="both", linestyle="--", alpha=0.5, color='#CBD5E1')
-    ax.legend(loc="upper right", frameon=True, facecolor='#FFFFFF', edgecolor='#CBD5E1', fontsize=9.5)
+    ax.legend(loc="upper right", frameon=True, facecolor='#FFFFFF', edgecolor='#CBD5E1', fontsize=10.5)
 
     save_fig(fig, "fig8_h100_scaling_laws.png")
 
