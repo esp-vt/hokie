@@ -10,6 +10,20 @@
 \usepackage{url}
 \usepackage{xcolor}
 \usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+
+% Sleek publication-grade Key Takeaway Box for 2-column IEEE layout
+\newtcolorbox{takeawaybox}[1][]{
+    colback=gray!5!white,
+    colframe=black!85!black,
+    fonttitle=\bfseries\footnotesize,
+    title={Key Takeaway},
+    arc=1.0mm,
+    boxrule=0.7pt,
+    left=4pt, right=4pt, top=3pt, bottom=3pt,
+    before skip=5pt, after skip=5pt,
+    #1
+}
 
 % Ensure compatibility with natbib citation commands in IEEE format
 \providecommand{\citep}[1]{\cite{#1}}
