@@ -1,19 +1,21 @@
 \section{Introduction}
 \label{sec:intro}
 
-Modern Large Language Models (LLMs) predominantly rely on the Transformer architecture \citep{vaswani2017attention}, where self-attention mechanisms compute pairwise token interactions across time.
-While empirically powerful, this formulation incurs three critical structural drawbacks:
-\begin{enumerate}[leftmargin=*]
-    \item \textbf{The $\mathcal{O}(T)$ Memory Wall:} Autoregressive inference requires maintaining a Key-Value (KV) cache proportional to sequence length $T$ across all layers. In multi-turn dialogue agents and long-document reasoning ($32\text{k}+$ tokens), the KV cache consumes tens of gigabytes of VRAM, dominating memory bandwidth and stalling serving throughput.
-    \item \textbf{The Inability to Forget and Catastrophic Distraction:} Softmax attention computes pairwise interactions with strictly positive weights $\exp(QK^\top/\sqrt{d}) > 0$, rendering Transformers incapable of actively purging obsolete variable states, closed scratchpads, or cross-topic noise. As sequence length expands, accumulating distractors degrade memory Signal-to-Noise Ratio (SNR), inducing hallucination and preventing zero-shot privacy unlearning.
-    \item \textbf{The Verbalization Inefficiency in Reasoning:} To solve complex mathematical, symbolic, and planning problems, recent paradigm shifts (e.g., Chain-of-Thought \citep{wei2022chain}, o1-style deliberative reasoning) require generating hundreds to thousands of intermediate ``thought tokens'' in text space. Generating verbose tokens through the full vocabulary projection ($d_{\text{model}} \times V$) incurs massive computational latency and token cost.
-\end{enumerate}
+The dominant paradigm in modern artificial intelligence rests on a foundational premise: that scaling autoregressive Transformers \citep{vaswani2017attention} trained on next-token prediction will asymptotically solve general sequence intelligence. 
+While scaling parameters has yielded undeniable linguistic fluency, this paradigm is colliding with fundamental computational and mathematical barriers inherent to the Transformer formulation itself.
 
-In contrast, human cognitive reasoning rarely verbalizes every intermediate computational branch into spoken language.
-Instead, the brain performs \textit{internal mental simulation} within an abstract predictive model of the world \citep{hafner2023mastering,friston2010free} before formulating a refined linguistic utterance, actively pruning noise and forgetting irrelevant surface details to preserve semantic invariants.
+\subsection{The Three Existential Pathology Vectors of Transformers}
 
-Recent advances in State Space Models (SSMs) such as S4 \citep{gu2022efficiently} and Mamba \citep{gu2023mamba} have demonstrated that recurrent linear-time formulations can match Transformer perplexity while maintaining $\mathcal{O}(1)$ inference memory.
-However, existing SSMs operate with purely deterministic single-state trajectories and passive exponential decay, making them incapable of modeling stochastic multi-hypothesis branches or conducting subspace-selective memory eviction.
+Under close mathematical and physical inspection, autoregressive Transformers exhibit three structural pathologies:
+
+\paragraph{1. The $\mathcal{O}(T)$ Memory Wall \& Serving Collapse.}
+Autoregressive self-attention demands caching every historical key and value vector across all layers ($M_{\text{KV}} = 2 \cdot L \cdot N_{\text{layers}} \cdot d_{\text{model}} \cdot \text{sizeof(fp16)}$). In long-context workflows ($16\text{k} \sim 100\text{k}$ tokens), the KV cache consumes tens of gigabytes per individual user stream. In enterprise environments serving thousands of concurrent users, this linear memory expansion triggers an insurmountable bottleneck: serving 4,096 concurrent sessions at an $8\text{,}192$ horizon requires a prohibitive **$16.38\text{ TB}$ of volatile memory**, forcing single-GPU engines into out-of-memory (OOM) failure beyond $\approx 120$ streams and demanding massive multi-node GPU clusters.
+
+\paragraph{2. The Softmax Toxicity: Inability to Forget and Catastrophic Distraction.}
+Because standard self-attention normalizes affinities via the strictly positive Softmax operator ($\exp(\mathbf{q}_t \mathbf{k}_i^\top/\sqrt{d}) > 0, \, \forall i \le t$), Transformers are \textit{architecturally incapable of forgetting}. Once a token is written to context, its influence can never be set to zero. As sequences expand with noisy terminal logs, obsolete variable assignments, or transient scratchpad calculations, the partition sum denominator $\sum_{m=1}^t \exp(\mathbf{q}_t \mathbf{k}_m^\top/\sqrt{d})$ diverges, diluting attention entropy across hundreds of irrelevant distractors. This induces catastrophic context rot (rule compliance plummeting to $32.0\%$ at Turn 100) and renders zero-shot privacy unlearning (e.g., GDPR data deletion mandates) mathematically impossible without multi-hour parameter retraining.
+
+\paragraph{3. The Verbalization Inefficiency: Token-Wasting Mental Traps.}
+To tackle multi-step logic and mathematical deduction, recent paradigms (e.g., Chain-of-Thought \citep{wei2022chain}, OpenAI o1) force models to verbalize internal calculations into extensive sequences of natural language text tokens. Generating hundreds of intermediate words forces repetitive matrix multiplications against the full vocabulary projection matrix $\mathbf{W}_{\text{head}} \in \mathbb{R}^{V \times d_{\text{model}}}$ ($50\text{,}257 \times 512$) at every single step ($14.8\times \sim 352\times$ FLOPs inflation). Furthermore, intermediate natural language text creates brittle, non-differentiable dependencies: a single flawed reasoning token permanently pollutes the autoregressive context, locking the model into unrecoverable hallucination loops.
 
 \begin{figure}[t]
     \centering
@@ -22,12 +24,23 @@ However, existing SSMs operate with purely deterministic single-state trajectori
     \label{fig:model_architecture}
 \end{figure}
 
-To bridge this fundamental gap, we introduce \textbf{Hokie-LM}, a unified foundation architecture that marries Recurrent State-Space World Models (RSSM) with selective state-space duality and cognitive active forgetting.
-Our primary contributions are summarized as follows:
+\subsection{Biological Plausibility \& The SSM Limitation}
+
+Human cognitive neurobiology does not operate as an uncompressed, unbounded token buffer, nor does it verbalize every sub-second neuron firing into spoken words. 
+Instead, biological cognition performs \textit{internal mental simulation} within abstract, low-dimensional generative world models \citep{hafner2023mastering,friston2010free} before formulating linguistic action. Crucially, the brain actively purges synaptic noise and transient sensory details to preserve sharp semantic invariants.
+
+Recent linear State Space Models (SSMs) such as S4 \citep{gu2022efficiently} and Mamba \citep{gu2023mamba} achieve linear time complexity and constant $\mathcal{O}(1)$ working memory. 
+However, standard SSMs suffer from a critical flaw: **passive, uniform exponential decay ($\mathbf{A}_t = \exp(-\Delta_t \mathbf{A})$)**. By decaying all state coordinates uniformly, passive SSMs cannot distinguish between eternal system instructions and disposable scratchpad data, leading to severe memory amnesia (State SNR decaying to $5.0\text{ dB}$ across 100k tokens). Furthermore, operating strictly on deterministic state vectors, standard SSMs lack the multi-hypothesis belief representations necessary for complex search and counterfactual planning.
+
+\subsection{The Hokie-LM Solution: Dual-Loop Cognitive Dynamics}
+
+To decisively dismantle these bottlenecks, we introduce \textbf{\textsc{Hokie-LM}} (\textsc{NeuroWorld-LM}), a non-Transformer cognitive foundation architecture that marries selective continuous State-Space Duality with discrete categorical Recurrent State-Space Models (RSSM) and intelligent active forgetting.
+
+Our key scientific contributions are:
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Dual-Loop State Dynamics:} We formulate sequence modeling via deterministic continuous-time SSM context memory ($h_t$) combined with discrete categorical latent beliefs ($z_t$). This resolves the information bottleneck of linear RNNs while preserving strictly $\mathcal{O}(1)$ inference memory ($17.0\text{ KB}$).
-    \item \textbf{Cognitive Active Forgetting Engine (CAFE):} We introduce an intelligent forgetting architecture featuring multi-scale channel lifetimes, decoupled storage/eviction dual-gating, and semantic subspace nullification ($\mathbf{P}_{\perp}$), solving the context rot and distractor interference problems of Transformers with provable zero leakage.
-    \item \textbf{Zero-Token Latent Rollout Planner:} We introduce an internal mental simulation engine that rolls out $K$-step latent trajectories $(h_{t+k}, z_{t+k})$ conditioned on learned Value scoring, jumping directly to target conclusions without generating redundant intermediate tokens.
-    \item \textbf{Surprise-Driven Gating \& Chunked Parallel Scan:} We employ variational KL divergence as an analytical surprise metric ($\gamma_t$), dynamically regulating memory persistence and achieving $8.69\times$ training acceleration via State-Space Duality (SSD) chunked scans.
-    \item \textbf{Comprehensive Empirical Validation:} Across MQAR 16k, multi-hop reasoning, GSM8K, 100k-token active memory purging, and H100 GPU concurrency, Hokie-LM establishes a strictly superior accuracy and efficiency frontier over Transformers.
+    \item \textbf{Exact $\mathcal{O}(1) = 17.0\text{ KB}$ Dual-Loop State Core:} We formulate sequence modeling through coupled continuous SSM context memory ($h_t$) and discrete categorical latent beliefs ($z_t \in \Delta^{32 \times 32}$). This compresses sequence history into an invariant $17.0\text{ KB}$ working buffer, achieving $81.2\%$ accuracy at 16,384-token associative recall ($1\text{,}927.5\times$ memory reduction over Transformer KV caches).
+    \item \textbf{Cognitive Active Forgetting Engine (CAFE):} We introduce a multi-scale temporal partitioning scheme ($\boldsymbol{\Omega}$) featuring decoupled storage/eviction dual gates and an instantaneous orthogonal subspace nullification operator ($\mathbf{P}_{\perp} = \mathbf{I} - \mathbf{V}(\mathbf{V}^\top \mathbf{V})^{-1}\mathbf{V}^\top$). CAFE achieves **$99.4\%$ accuracy on conflicting distractor overwrites (+58.8\%p over Transformers)** and guarantees **provable zero-leakage privacy unlearning ($I(Y_{\text{secret}}; \mathbf{h}^*) \equiv 0$) in $184.3\text{ ms}$**.
+    \item \textbf{Zero-Token Latent Rollout Planner:} We replace text-based verbalization with an internalized mental simulation engine. The model rolls out $K$-step latent thought trajectories $(h_{t+k}, z_{t+k})$ guided by a learned Value Head ($V_\psi$), boosting 5-hop deduction (+37.5\%p) and GSM8K (+40.0\%p) while slashing compute to **$1.25\times$ FLOPs ($11.8\times \sim 12.0\times$ lower than Verbal CoT)**.
+    \item \textbf{Surprise-Driven Gating \& Triton GPU Acceleration:} We utilize variational KL divergence as an analytical surprise metric ($\gamma_t = \mathcal{D}_{\mathrm{KL}}(q_\phi \parallel p_\theta)$) to regulate memory retention. Custom Triton GPU kernels fuse the semi-separable state scan directly in on-chip SRAM, achieving a **$152.77\times$ kernel speedup ($1.18\text{ ms}$)**.
+    \item \textbf{Ultra-High Concurrency Serving on NVIDIA H100:} Our `PagedState` memory engine pre-allocates $\mathcal{O}(1)$ state slots, hosting **4,096 concurrent active user streams in just $17.41\text{ GB}$ VRAM on a single H100 GPU** ($963.8\times$ VRAM savings over PagedAttention).
 \end{itemize}
