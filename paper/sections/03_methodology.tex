@@ -63,7 +63,7 @@ We partition the continuous state dimension $d_{\mathrm{inner}}$ into three dedi
 where $\omega_{\mathrm{persist}} \approx 0.05$ (near-infinite retention), $\omega_{\mathrm{work}} = 1.0$, and $\omega_{\mathrm{scratch}} = 25.0 \sim 50.0$.
 
 \paragraph{2. Decoupled Dual-Gated Dynamics.}
-Rather than conflating informational novelty with memory eviction, CAFE mathematically decouples the \textit{Storage Salience Gate} from the \textit{Active Eviction Gate}:
+Rather than conflating informational novelty with memory eviction, CAFE mathematically decouples the Storage Salience Gate from the Active Eviction Gate:
 \begin{align}
     \mathbf{u}_{\mathrm{eff}} &= \mathbf{u} \cdot \left(1 + \sigma(W_s \gamma_t)\right) \\
     E_t &= \sigma\Big( W_e \mathbf{u} + U_e h_{t-1} + \lambda_{b} \mathbf{1}_{\{\mathrm{bnd}\}} - \beta \gamma_t \Big) \\
@@ -77,6 +77,7 @@ When a dynamic entity variable is updated ($v_{\mathrm{obs}} \rightarrow v_{\mat
 \begin{split}
     \mathbf{P}_{\perp} &= \mathbf{I} - \frac{\tilde{v}_{\mathrm{obs}} \tilde{v}_{\mathrm{obs}}^\top}{\|\tilde{v}_{\mathrm{obs}}\|^2}, \\
     h_t &= \mathbf{P}_{\perp} h_t^{\mathrm{raw}}
+
 \end{split}
 \end{equation}
 This mathematically guarantees exact zero mutual information $I(v_{\mathrm{obs}}; h_t) \equiv 0$, completely eliminating distractor interference while keeping other contextual memory coordinates untouched.
@@ -87,10 +88,3 @@ Because $\mathbf{A}_t^{\mathrm{active}}$ retains diagonal semi-separable structu
     \mathbf{A}_{j:i}^{\mathrm{active}} = \exp\left( -\sum_{k=j}^i \Delta_k \mathbf{A} \odot (1 + \boldsymbol{\Omega} \odot E_k) \right)
 \end{equation}
 preserving full Triton hardware acceleration without sequential unrolling overhead.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{figures/fig2_latent_trajectory.png}
-    \caption{\textbf{Zero-Token Latent Rollout Trajectories.} 2D PCA projection of $M=4$ parallel internal simulation branches in latent state space $(h, z)$ converging towards the optimal thought attractor basin.}
-    \label{fig:latent_trajectory}
-\end{figure}

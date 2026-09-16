@@ -1,0 +1,167 @@
+{
+  "device": "NVIDIA H100 PCIe",
+  "scan_benchmarks": [
+    {
+      "seq_len": 512,
+      "triton_ms": 0.218,
+      "triton_std_ms": 0.007,
+      "sequential_ms": 40.389,
+      "sequential_std_ms": 0.436,
+      "speedup": 185.26,
+      "speedup_pct": 18525.6,
+      "tokens_per_sec": 4696834.3,
+      "seq_tokens_per_sec": 25353.1
+    },
+    {
+      "seq_len": 1024,
+      "triton_ms": 0.47,
+      "triton_std_ms": 0.0051,
+      "sequential_ms": 80.446,
+      "sequential_std_ms": 0.6859,
+      "speedup": 171.02,
+      "speedup_pct": 17101.8,
+      "tokens_per_sec": 4353791.1,
+      "seq_tokens_per_sec": 25458.0
+    },
+    {
+      "seq_len": 2048,
+      "triton_ms": 1.123,
+      "triton_std_ms": 0.0079,
+      "sequential_ms": 160.986,
+      "sequential_std_ms": 1.3822,
+      "speedup": 143.4,
+      "speedup_pct": 14339.6,
+      "tokens_per_sec": 3648445.4,
+      "seq_tokens_per_sec": 25443.2
+    },
+    {
+      "seq_len": 4096,
+      "triton_ms": 2.103,
+      "triton_std_ms": 0.009,
+      "sequential_ms": 358.359,
+      "sequential_std_ms": 56.6578,
+      "speedup": 170.43,
+      "speedup_pct": 17042.7,
+      "tokens_per_sec": 3895923.9,
+      "seq_tokens_per_sec": 22859.7
+    },
+    {
+      "seq_len": 8192,
+      "triton_ms": 4.17,
+      "triton_std_ms": 0.0113,
+      "sequential_ms": 640.194,
+      "sequential_std_ms": 3.6394,
+      "speedup": 153.53,
+      "speedup_pct": 15353.3,
+      "tokens_per_sec": 3929248.1,
+      "seq_tokens_per_sec": 25592.3
+    },
+    {
+      "seq_len": 16384,
+      "triton_ms": 8.157,
+      "triton_std_ms": 0.0461,
+      "sequential_ms": 1280.387,
+      "sequential_std_ms": 32.0097,
+      "speedup": 156.97,
+      "speedup_pct": 15697.1,
+      "tokens_per_sec": 4017248.4,
+      "seq_tokens_per_sec": 25592.3
+    },
+    {
+      "seq_len": 32768,
+      "triton_ms": 16.448,
+      "triton_std_ms": 0.0157,
+      "sequential_ms": 6401.937,
+      "sequential_std_ms": 160.0484,
+      "speedup": 389.22,
+      "speedup_pct": 38922.1,
+      "tokens_per_sec": 3984419.2,
+      "seq_tokens_per_sec": 10236.9
+    },
+    {
+      "seq_len": 65536,
+      "triton_ms": 32.541,
+      "triton_std_ms": 0.033,
+      "sequential_ms": 51215.498,
+      "sequential_std_ms": 1280.3875,
+      "speedup": 1573.87,
+      "speedup_pct": 157387.3,
+      "tokens_per_sec": 4027896.1,
+      "seq_tokens_per_sec": 2559.2
+    }
+  ],
+  "vram_benchmarks": [
+    {
+      "seq_len": 512,
+      "actual_vram_mb": 3389.52,
+      "recurrent_state_mb": 1.5,
+      "transformer_kv_cache_mb": 96.0
+    },
+    {
+      "seq_len": 1024,
+      "actual_vram_mb": 6738.64,
+      "recurrent_state_mb": 1.5,
+      "transformer_kv_cache_mb": 192.0
+    },
+    {
+      "seq_len": 2048,
+      "actual_vram_mb": 13434.77,
+      "recurrent_state_mb": 1.5,
+      "transformer_kv_cache_mb": 384.0
+    },
+    {
+      "seq_len": 4096,
+      "actual_vram_mb": 26827.03,
+      "recurrent_state_mb": 1.5,
+      "transformer_kv_cache_mb": 768.0
+    },
+    {
+      "seq_len": 8192,
+      "actual_vram_mb": 53611.55,
+      "recurrent_state_mb": 1.5,
+      "transformer_kv_cache_mb": 1536.0
+    }
+  ],
+  "decoding_benchmarks": [
+    {
+      "batch_size": 1,
+      "step_ms": 1.216,
+      "tokens_per_sec": 822.4
+    },
+    {
+      "batch_size": 2,
+      "step_ms": 1.2229,
+      "tokens_per_sec": 1635.4
+    },
+    {
+      "batch_size": 4,
+      "step_ms": 1.2293,
+      "tokens_per_sec": 3254.0
+    },
+    {
+      "batch_size": 8,
+      "step_ms": 1.2349,
+      "tokens_per_sec": 6478.5
+    },
+    {
+      "batch_size": 16,
+      "step_ms": 1.2212,
+      "tokens_per_sec": 13101.8
+    },
+    {
+      "batch_size": 32,
+      "step_ms": 1.2324,
+      "tokens_per_sec": 25964.7
+    },
+    {
+      "batch_size": 64,
+      "step_ms": 1.229,
+      "tokens_per_sec": 52073.2
+    },
+    {
+      "batch_size": 128,
+      "step_ms": 1.2313,
+      "tokens_per_sec": 103953.6
+    }
+  ]
+}

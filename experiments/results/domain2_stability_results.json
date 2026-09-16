@@ -1,0 +1,130 @@
+{
+  "stability_100k_summary": {
+    "total_steps": 100000,
+    "final_cafe_norm": 0.02441,
+    "final_cafe_energy": 0.00013,
+    "final_passive_norm": 0.03295,
+    "final_passive_energy": 0.00018
+  },
+  "fact_retention_benchmark": [
+    {
+      "token_distance": 0,
+      "passive_decay_pct": 100.0,
+      "cafe_persistent_pct": 100.0,
+      "cafe_working_pct": 100.0,
+      "cafe_scratchpad_pct": 100.0
+    },
+    {
+      "token_distance": 1,
+      "passive_decay_pct": 275.4747,
+      "cafe_persistent_pct": 99.9999,
+      "cafe_working_pct": 99.95,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 2,
+      "passive_decay_pct": 208.1477,
+      "cafe_persistent_pct": 99.9998,
+      "cafe_working_pct": 99.9,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 5,
+      "passive_decay_pct": 124.1361,
+      "cafe_persistent_pct": 99.9996,
+      "cafe_working_pct": 99.7503,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 10,
+      "passive_decay_pct": 76.2874,
+      "cafe_persistent_pct": 99.9992,
+      "cafe_working_pct": 99.5012,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 20,
+      "passive_decay_pct": 39.5623,
+      "cafe_persistent_pct": 99.9984,
+      "cafe_working_pct": 99.0049,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 50,
+      "passive_decay_pct": 8.2363,
+      "cafe_persistent_pct": 99.9961,
+      "cafe_working_pct": 97.5308,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 100,
+      "passive_decay_pct": 0.6738,
+      "cafe_persistent_pct": 99.9922,
+      "cafe_working_pct": 95.1227,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 200,
+      "passive_decay_pct": 0.0045,
+      "cafe_persistent_pct": 99.9844,
+      "cafe_working_pct": 90.4832,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 500,
+      "passive_decay_pct": 0.0,
+      "cafe_persistent_pct": 99.9611,
+      "cafe_working_pct": 77.8789,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 1000,
+      "passive_decay_pct": 0.0,
+      "cafe_persistent_pct": 99.9222,
+      "cafe_working_pct": 60.6513,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 2000,
+      "passive_decay_pct": 0.0,
+      "cafe_persistent_pct": 99.8445,
+      "cafe_working_pct": 5.5179,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 3000,
+      "passive_decay_pct": 0.0,
+      "cafe_persistent_pct": 99.767,
+      "cafe_working_pct": 0.502,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 5000,
+      "passive_decay_pct": 0.0,
+      "cafe_persistent_pct": 99.612,
+      "cafe_working_pct": 0.0277,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 7500,
+      "passive_decay_pct": 0.0,
+      "cafe_persistent_pct": 99.4186,
+      "cafe_working_pct": 0.0002,
+      "cafe_scratchpad_pct": 0.0
+    },
+    {
+      "token_distance": 10000,
+      "passive_decay_pct": 0.0,
+      "cafe_persistent_pct": 99.2254,
+      "cafe_working_pct": 0.0,
+      "cafe_scratchpad_pct": 0.0
+    }
+  ],
+  "spectral_analysis": {
+    "mean_spectral_radius": 0.951304,
+    "max_spectral_radius": 0.9985,
+    "min_spectral_radius": 0.905468,
+    "num_evaluated_channels": 8192000,
+    "strictly_stable_percentage": 100.0
+  }
+}

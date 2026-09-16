@@ -1,0 +1,5 @@
+seq_len,num_kv_pairs,recall_accuracy_pct,training_time_sec
+256,4,0.25,6.3
+512,8,0.25,5.8
+1024,8,0.75,11.3
+2048,16,0.0,16.3

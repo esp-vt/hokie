@@ -54,49 +54,87 @@ def draw_straight_arrow(ax, x1, y1, x2, y2, color='#000000', lw=1.6, zorder=2):
         zorder=zorder
     )
 
-def draw_classic_skip(ax, trunk_x, start_y, target_box_right_x, target_box_y, branch_x, color='#000000', lw=1.6, zorder=2):
+def draw_autoregressive_loop(ax, start_x, start_y, target_x, target_y, route_x, color='#DC2626', lw=1.8, label="Autoregressive Loop (t -> t+1)"):
     """
-    Draws a faithful Vaswani-style residual skip connection:
-    Branches right from trunk at start_y, runs up along branch_x, turns left into target box right side.
+    Draws a clean, prominent loop line from top output down to bottom input.
     """
     path_data = [
-        (Path.MOVETO, (trunk_x, start_y)),
-        (Path.LINETO, (branch_x, start_y)),
-        (Path.LINETO, (branch_x, target_box_y)),
-        (Path.LINETO, (target_box_right_x, target_box_y))
+        (Path.MOVETO, (start_x, start_y)),
+        (Path.LINETO, (route_x, start_y)),
+        (Path.LINETO, (route_x, target_y)),
+        (Path.LINETO, (target_x, target_y))
     ]
     codes, verts = zip(*path_data)
     path = Path(verts, codes)
-    patch = PathPatch(path, facecolor='none', edgecolor=color, lw=lw, zorder=zorder)
+    patch = PathPatch(path, facecolor='none', edgecolor=color, lw=lw, linestyle='--', zorder=3)
     ax.add_patch(patch)
     
     ax.annotate(
-        "", xy=(target_box_right_x, target_box_y), xytext=(target_box_right_x + 0.15, target_box_y),
+        "", xy=(target_x, target_y), xytext=(target_x - 0.15, target_y),
         arrowprops=dict(
             arrowstyle="-|>",
             color=color,
             lw=lw,
-            mutation_scale=13,
+            mutation_scale=14,
             shrinkA=0,
             shrinkB=0
         ),
-        zorder=zorder
+        zorder=4
+    )
+    # Midpoint label rotated along the line
+    mid_y = (start_y + target_y) / 2.0
+    ax.text(route_x - 0.22, mid_y, label, ha='center', va='center', rotation=90,
+            fontsize=8.5, fontweight='bold', color=color, zorder=5)
+
+def draw_classic_skip(ax, start_x, start_y, end_x, end_y, route_x, color='#000000', lw=1.6):
+    """
+    Draws a standard residual skip connection around a sub-block.
+    """
+    path_data = [
+        (Path.MOVETO, (start_x, start_y)),
+        (Path.LINETO, (route_x, start_y)),
+        (Path.LINETO, (route_x, end_y)),
+        (Path.LINETO, (end_x, end_y))
+    ]
+    codes, verts = zip(*path_data)
+    path = Path(verts, codes)
+    patch = PathPatch(path, facecolor='none', edgecolor=color, lw=lw, zorder=2)
+    ax.add_patch(patch)
+    
+    # Circle tap at start
+    circle = Circle((start_x, start_y), 0.04, facecolor=color, edgecolor=color, zorder=4)
+    ax.add_patch(circle)
+    
+    # Arrow into end
+    ax.annotate(
+        "", xy=(end_x, end_y), xytext=(end_x + 0.12, end_y),
+        arrowprops=dict(
+            arrowstyle="-|>",
+            color=color,
+            lw=lw,
+            mutation_scale=12,
+            shrinkA=0,
+            shrinkB=0
+        ),
+        zorder=4
     )
 
+
+
 def render_true_architecture():
-    """Generates the Comprehensive Dual-Panel Architecture Figure (Full Pipeline + RSSM Deep Dive)."""
-    fig, ax = plt.subplots(figsize=(17.0, 15.8), dpi=300)
+    """Generates the Comprehensive Dual-Panel Architecture Figure with Autoregressive Loop."""
+    fig, ax = plt.subplots(figsize=(17.0, 15.0), dpi=300)
     fig.patch.set_facecolor('#FFFFFF')
     ax.set_facecolor('#FFFFFF')
     ax.set_xlim(0, 17.0)
-    ax.set_ylim(0, 15.8)
+    ax.set_ylim(0, 15.0)
     ax.axis('off')
 
-    c_bg_embed = '#FCE7F3'     # Soft Rose / Pink
+    c_bg_embed = '#FCE7F3'     # Soft Rose
     c_bd_embed = '#000000'
     c_bg_norm  = '#FEF08A'     # Soft Yellow
     c_bd_norm  = '#000000'
-    c_bg_ssm   = '#FFEDD5'     # Soft Peach / Orange
+    c_bg_ssm   = '#FFEDD5'     # Soft Peach
     c_bd_ssm   = '#000000'
     c_bg_ffn   = '#BAE6FD'     # Soft Sky Blue
     c_bd_ffn   = '#000000'
@@ -104,68 +142,65 @@ def render_true_architecture():
     c_bd_prior = '#000000'
     c_bg_head  = '#E0E7FF'     # Soft Indigo
     c_bd_head  = '#000000'
-    c_bg_cafe  = '#D1FAE5'     # Soft Mint / Emerald
+    c_bg_cafe  = '#D1FAE5'     # Soft Mint
     c_bd_cafe  = '#000000'
-    c_bg_plan  = '#EDE9FE'     # Soft Purple
-    c_bd_plan  = '#7C3AED'
 
     # =========================================================================
     # LEFT PANEL: Full Foundation Pipeline (Inputs -> N x Stack -> Logits)
     # =========================================================================
-    cx1 = 4.2
+    cx1 = 4.6
 
-    ax.text(cx1, 15.2, "Hokie-LM / NeuroWorld-LM", ha='center', va='center', fontsize=18, fontweight='bold', color='#000000')
-    ax.text(cx1, 14.82, "End-to-End Cognitive World-Model Architecture (Attention-Free, Softmax-Free)", ha='center', va='center', fontsize=9.8, color='#475569')
+    ax.text(cx1, 14.50, "Hokie-LM Architecture", ha='center', va='center', fontsize=18, fontweight='bold', color='#0F172A')
+    ax.text(cx1, 14.15, "24-Layer Cognitive World Model", ha='center', va='center', fontsize=10, color='#64748B')
 
-    # Top: Raw Next-Token Logits Output (No Softmax in Model forward pass!)
-    ax.text(cx1, 14.05, r"Output Next-Token Logits $\hat{y}_t \in \mathbb{R}^{V}$", ha='center', va='center', fontsize=12.2, fontweight='bold', color='#000000')
-    ax.text(cx1, 13.68, "(Direct Cross-Entropy Loss / Top-p Sampling)", ha='center', va='center', fontsize=8.4, color='#64748B')
-    draw_straight_arrow(ax, cx1, 12.95, cx1, 13.45)
+    # Top: Next-Token Output Box
+    create_rounded_box(ax, cx1, 13.35, 3.4, 0.55, '#F1F5F9', '#DC2626', r"Output Token $\hat{x}_{t+1}$", r"(Next-Token Logits $\hat{y}_t \in \mathbb{R}^V$)", fontsize=10.5, sub_fontsize=7.8, text_color='#DC2626', lw=1.8)
+    draw_straight_arrow(ax, cx1, 12.65, cx1, 13.07)
 
-    # Linear LM Head (Tied weights)
-    create_rounded_box(ax, cx1, 12.65, 3.4, 0.58, c_bg_head, c_bd_head, "Linear (LM Head)", r"Tied Token Weights ($d_{\mathrm{model}} \to V=50,266$)", fontsize=10.5, sub_fontsize=7.8)
-    draw_straight_arrow(ax, cx1, 11.65, cx1, 12.36)
+    # Linear LM Head
+    create_rounded_box(ax, cx1, 12.35, 3.4, 0.52, c_bg_head, c_bd_head, "Linear LM Head", r"Tied Weights ($d_{\mathrm{model}} \to V$)", fontsize=10.5, sub_fontsize=7.8)
+    draw_straight_arrow(ax, cx1, 11.50, cx1, 12.09)
 
     # Final RMSNorm
-    create_rounded_box(ax, cx1, 11.38, 3.4, 0.48, c_bg_norm, c_bd_norm, "Final RMSNorm", fontsize=10.5)
-    draw_straight_arrow(ax, cx1, 10.55, cx1, 11.14)
+    create_rounded_box(ax, cx1, 11.25, 3.4, 0.46, c_bg_norm, c_bd_norm, "Final RMSNorm", fontsize=10.5)
+    draw_straight_arrow(ax, cx1, 10.45, cx1, 11.02)
 
     # -------------------------------------------------------------
     # N x Bounded Box (24 Layers)
     # -------------------------------------------------------------
     stack_box = FancyBboxPatch(
-        (cx1 - 2.45, 3.00), 4.9, 7.50,
+        (cx1 - 2.40, 2.65), 4.8, 7.80,
         boxstyle="round,pad=0.0,rounding_size=0.18",
         facecolor='#F8FAFC',
-        edgecolor='#000000',
-        linewidth=2.2,
+        edgecolor='#0F172A',
+        linewidth=2.0,
         zorder=1
     )
     ax.add_patch(stack_box)
 
     # Nx Label
-    ax.text(cx1 + 3.15, 6.95, r"$N\times$", ha='center', va='center', fontsize=22, fontweight='bold', color='#000000')
-    ax.text(cx1 + 3.15, 6.45, "(24 Layers)", ha='center', va='center', fontsize=9.2, fontweight='bold', color='#475569')
+    ax.text(cx1 + 3.05, 6.75, r"$N\times$", ha='center', va='center', fontsize=22, fontweight='bold', color='#0F172A')
+    ax.text(cx1 + 3.05, 6.25, "(24 Layers)", ha='center', va='center', fontsize=9.2, fontweight='bold', color='#64748B')
 
     # Inside N x Box:
     # 4. Top Add & RMSNorm
-    create_rounded_box(ax, cx1, 9.95, 3.3, 0.48, c_bg_norm, c_bd_norm, "Add & RMSNorm", fontsize=11)
-    draw_straight_arrow(ax, cx1, 9.10, cx1, 9.71)
+    create_rounded_box(ax, cx1, 9.85, 3.3, 0.46, c_bg_norm, c_bd_norm, "Add & RMSNorm", fontsize=10.8)
+    draw_straight_arrow(ax, cx1, 9.05, cx1, 9.62)
 
     # 3. SwiGLU Feed Forward
-    create_rounded_box(ax, cx1, 8.55, 3.3, 0.92, c_bg_ffn, c_bd_ffn, "SwiGLU Feed Forward", r"$\mathrm{FFN}(x) = W_3(\mathrm{SiLU}(W_1 x) \odot W_2 x)$ (Dim: 4096)", fontsize=11, sub_fontsize=8.0)
-    draw_straight_arrow(ax, cx1, 7.58, cx1, 8.09)
+    create_rounded_box(ax, cx1, 8.45, 3.3, 0.85, c_bg_ffn, c_bd_ffn, "SwiGLU FFN", r"$\mathrm{FFN}(x) = W_3(\mathrm{SiLU}(W_1 x) \odot W_2 x)$ (4096-dim)", fontsize=10.8, sub_fontsize=7.8)
+    draw_straight_arrow(ax, cx1, 7.45, cx1, 8.02)
 
-    # Skip Connection around FFN (Vaswani style into side of Add & RMSNorm)
-    draw_classic_skip(ax, cx1, 7.82, cx1 + 1.65, 9.95, cx1 + 2.05, lw=1.6)
+    # Skip Connection around FFN
+    draw_classic_skip(ax, cx1, 7.70, cx1 + 1.65, 9.85, cx1 + 2.05, lw=1.6)
 
     # 2. Middle Add & RMSNorm
-    create_rounded_box(ax, cx1, 7.28, 3.3, 0.48, c_bg_norm, c_bd_norm, "Add & RMSNorm", fontsize=11)
-    draw_straight_arrow(ax, cx1, 6.35, cx1, 7.04)
+    create_rounded_box(ax, cx1, 7.18, 3.3, 0.46, c_bg_norm, c_bd_norm, "Add & RMSNorm", fontsize=10.8)
+    draw_straight_arrow(ax, cx1, 6.25, cx1, 6.95)
 
-    # 1. RSSM World-Model Layer (SSM + Latent Prior + CAFE)
+    # 1. Cognitive RSSM Block
     ssm_outer = FancyBboxPatch(
-        (cx1 - 1.65, 3.75), 3.3, 2.50,
+        (cx1 - 1.65, 3.55), 3.3, 2.70,
         boxstyle="round,pad=0.0,rounding_size=0.08",
         facecolor=c_bg_ssm,
         edgecolor=c_bd_ssm,
@@ -173,176 +208,102 @@ def render_true_architecture():
         zorder=3
     )
     ax.add_patch(ssm_outer)
-    ax.text(cx1, 5.98, "Cognitive RSSM Block", ha='center', va='center', fontsize=11.2, fontweight='bold', color='#000000', zorder=4)
+    ax.text(cx1, 5.95, "Cognitive RSSM Block", ha='center', va='center', fontsize=11.2, fontweight='bold', color='#000000', zorder=4)
 
-    # Inner Badges
-    ssm_sub1 = FancyBboxPatch((cx1 - 1.45, 5.15), 2.9, 0.48, boxstyle="round,pad=0.0,rounding_size=0.05",
-                              facecolor='#FEF3C7', edgecolor='#D97706', linewidth=1.0, zorder=4)
+    # Sub-box 1: CAFE Subspace Engine
+    ssm_sub1 = FancyBboxPatch((cx1 - 1.45, 4.80), 2.9, 0.90, boxstyle="round,pad=0.0,rounding_size=0.05",
+                              facecolor='#ECFDF5', edgecolor='#059669', linewidth=1.1, zorder=4)
     ax.add_patch(ssm_sub1)
-    ax.text(cx1, 5.39, r"Categorical Latent Prior: $z_t \sim q(z_t|h_t)$", ha='center', va='center', fontsize=8.0, fontweight='bold', color='#78350F', zorder=5)
+    ax.text(cx1, 5.38, "CAFE Active Forgetting", ha='center', va='center', fontsize=8.8, fontweight='bold', color='#065F46', zorder=5)
+    ax.text(cx1, 5.02, r"$\mathbf{P}_\perp = \mathbf{I} - \mathbf{V}\mathbf{V}^T, \;\; h_t = \bar{\mathbf{A}}h_{t-1} + \bar{\mathbf{B}}\tilde{x}_t$", ha='center', va='center', fontsize=7.8, color='#047857', zorder=5)
 
-    ssm_sub2 = FancyBboxPatch((cx1 - 1.45, 3.90), 2.9, 1.10, boxstyle="round,pad=0.0,rounding_size=0.05",
-                              facecolor='#ECFDF5', edgecolor='#059669', linewidth=1.0, zorder=4)
+    # Sub-box 2: Rollout Planner
+    ssm_sub2 = FancyBboxPatch((cx1 - 1.45, 3.75), 2.9, 0.85, boxstyle="round,pad=0.0,rounding_size=0.05",
+                              facecolor='#F5F3FF', edgecolor='#7C3AED', linewidth=1.1, zorder=4)
     ax.add_patch(ssm_sub2)
-    ax.text(cx1, 4.62, r"Continuous SSM: $h_t = \bar{\mathbf{A}}h_{t-1} + \bar{\mathbf{B}}\tilde{x}_t$", ha='center', va='center', fontsize=8.0, fontweight='bold', color='#065F46', zorder=5)
-    ax.text(cx1, 4.22, r"CAFE Subspace Nullification: $\mathbf{P}_\perp = \mathbf{I} - \mathbf{V}\mathbf{V}^T$", ha='center', va='center', fontsize=7.6, fontweight='bold', color='#047857', zorder=5)
+    ax.text(cx1, 4.30, "Latent Rollout Planner", ha='center', va='center', fontsize=8.8, fontweight='bold', color='#5B21B6', zorder=5)
+    ax.text(cx1, 3.96, r"Zero-Token MCTS: $h_\tau = \mathrm{SSM}(h_{\tau-1}, z_\tau)$", ha='center', va='center', fontsize=7.8, color='#4C1D95', zorder=5)
 
-    draw_straight_arrow(ax, cx1, 2.70, cx1, 3.75)
+    draw_straight_arrow(ax, cx1, 2.30, cx1, 3.55)
 
-    # Skip Connection around SSM (Vaswani style into side of Add & RMSNorm, starting inside stack box)
-    draw_classic_skip(ax, cx1, 3.25, cx1 + 1.65, 7.28, cx1 + 2.05, lw=1.6)
+    # Skip Connection around SSM
+    draw_classic_skip(ax, cx1, 2.95, cx1 + 1.65, 7.18, cx1 + 2.05, lw=1.6)
 
-    # Bottom: Continuous Time Parameter & Input Embedding
-    circle_dt = Circle((cx1 - 1.9, 2.25), 0.32, facecolor='#FFFFFF', edgecolor='#000000', linewidth=1.8, zorder=3)
-    ax.add_patch(circle_dt)
-    ax.text(cx1 - 1.9, 2.25, r"$\Delta t$", ha='center', va='center', fontsize=12.5, fontweight='bold', color='#000000', zorder=4)
-    ax.text(cx1 - 1.9, 1.70, "Continuous\nODE Dynamics", ha='center', va='center', fontsize=8.0, fontweight='bold', color='#000000')
-
-    # Summing Circle (+)
-    circle_sum = Circle((cx1, 2.25), 0.22, facecolor='#FFFFFF', edgecolor='#000000', linewidth=1.8, zorder=3)
-    ax.add_patch(circle_sum)
-    ax.text(cx1, 2.25, "+", ha='center', va='center', fontsize=14, fontweight='bold', color='#000000', zorder=4)
-
-    draw_straight_arrow(ax, cx1 - 1.58, 2.25, cx1 - 0.22, 2.25)
-    draw_straight_arrow(ax, cx1, 2.47, cx1, 3.00)
-    draw_straight_arrow(ax, cx1, 1.50, cx1, 2.03)
+    # Direct Embedding Trunk
+    draw_straight_arrow(ax, cx1, 1.45, cx1, 2.30)
 
     # Input Embedding
-    create_rounded_box(ax, cx1, 1.25, 3.4, 0.48, c_bg_embed, c_bd_embed, "Token Embedding", r"No Positional Embedding ($d_{\mathrm{model}} = 1024$)", fontsize=10.5, sub_fontsize=7.8)
-    draw_straight_arrow(ax, cx1, 0.70, cx1, 1.01)
+    create_rounded_box(ax, cx1, 1.15, 3.4, 0.55, c_bg_embed, c_bd_embed, "Token Embedding", r"Direct Flow ($d_{\mathrm{model}} = 1024$)", fontsize=10.5, sub_fontsize=7.6)
+    draw_straight_arrow(ax, cx1, 0.55, cx1, 0.87)
 
-    # Inputs Text
-    ax.text(cx1, 0.52, r"Inputs $(x_1, x_2, \dots, x_t)$", ha='center', va='center', fontsize=12, fontweight='bold', color='#000000')
+    # Inputs Text Box
+    create_rounded_box(ax, cx1, 0.35, 3.4, 0.45, '#F8FAFC', '#0F172A', r"Input Token $x_t$", fontsize=10.8)
+
+    # Autoregressive Loop from Top Output to Bottom Input
+    draw_autoregressive_loop(ax, cx1 - 1.70, 13.35, cx1 - 1.70, 0.35, route_x=1.10, color='#DC2626', lw=1.8, label="Autoregressive Feedback Loop (t -> t+1)")
 
 
     # =========================================================================
-    # RIGHT PANEL: True Internal RSSM, CAFE & Latent Planner
+    # RIGHT PANEL: Inside Cognitive RSSM Cell Deep Dive
     # =========================================================================
-    cx2 = 12.1
+    cx2 = 12.3
 
-    ax.text(cx2, 15.2, "Inside the RSSM Cognitive Cell", ha='center', va='center', fontsize=18, fontweight='bold', color='#000000')
-    ax.text(cx2, 14.82, "Multi-Scale Memory, Orthogonal Subspace Eviction & Latent MCTS Planning", ha='center', va='center', fontsize=9.8, color='#475569')
+    ax.text(cx2, 14.50, "Inside the Cognitive RSSM Cell", ha='center', va='center', fontsize=17, fontweight='bold', color='#0F172A')
+    ax.text(cx2, 14.15, "Internal 5-Stage Dataflow", ha='center', va='center', fontsize=10, color='#64748B')
 
     # Outer Container Box
     zoom_box = FancyBboxPatch(
-        (cx2 - 3.55, 0.45), 7.1, 14.1,
+        (cx2 - 3.45, 0.15), 6.9, 13.7,
         boxstyle="round,pad=0.0,rounding_size=0.18",
         facecolor='#F8FAFC',
-        edgecolor='#000000',
-        linewidth=2.2,
+        edgecolor='#0F172A',
+        linewidth=2.0,
         zorder=1
     )
     ax.add_patch(zoom_box)
 
-    # 1. Zero-Token Latent Rollout Planner (Top of Right Panel)
-    planner_box = FancyBboxPatch((cx2 - 3.30, 11.90), 6.6, 2.35, boxstyle="round,pad=0.0,rounding_size=0.12",
-                                 facecolor=c_bg_plan, edgecolor=c_bd_plan, linewidth=2.0, zorder=2)
-    ax.add_patch(planner_box)
-    
-    # Title Header Badge
-    create_rounded_box(ax, cx2, 13.90, 6.2, 0.44, '#6D28D9', '#4C1D95', "Zero-Token Latent MCTS / Rollout Planner", fontsize=10.2, text_color='#FFFFFF')
-    ax.text(cx2, 13.44, r"Imaginary Forward Rollouts in Discrete Categorical Space: $h_{\tau} = \mathrm{SSM}(h_{\tau-1}, z_{\tau})$", ha='center', va='center', fontsize=8.2, fontweight='bold', color='#4C1D95', zorder=4)
+    # 1. Top: Latent Rollout Planner
+    create_rounded_box(ax, cx2, 12.45, 6.2, 1.80, '#F5F3FF', '#7C3AED',
+                       "5. Latent Rollout Planner",
+                       r"Zero-Token MCTS Search in Latent Space: $h_\tau = \mathrm{SSM}(h_{\tau-1}, z_\tau)$" + "\n" + r"Multi-branch Rollouts ($V(h_\tau) = \sum \gamma^\tau r_\tau$)",
+                       fontsize=10.2, sub_fontsize=8.0, lw=1.5, rad=0.06)
+    draw_straight_arrow(ax, cx2, 11.00, cx2, 11.55, color='#7C3AED')
 
-    # Planner 3 Branch Bubbles
-    for idx, (bx, label) in enumerate([(-2.0, r"Branch 1 ($\pi_1$)"), (0.0, r"Branch 2 ($\pi_2$)"), (2.0, r"Branch 3 ($\pi_3$)")]):
-        b_box = FancyBboxPatch((cx2 + bx - 0.90, 12.10), 1.80, 0.95, boxstyle="round,pad=0.0,rounding_size=0.06",
-                               facecolor='#FFFFFF', edgecolor='#7C3AED', linewidth=1.2, zorder=3)
-        ax.add_patch(b_box)
-        ax.text(cx2 + bx, 12.72, label, ha='center', va='center', fontsize=8.2, fontweight='bold', color='#5B21B6', zorder=4)
-        ax.text(cx2 + bx, 12.35, r"$V(h_\tau) = \gamma^\tau r_\tau$", ha='center', va='center', fontsize=7.6, color='#334155', zorder=4)
+    # 2. Gated SSM Output
+    create_rounded_box(ax, cx2, 10.35, 6.2, 1.05, '#FEF08A', '#000000',
+                       "4. Gated SSM Output",
+                       r"$y_t = ( \mathbf{C}_t h_t + \mathbf{D} x_t ) \odot \mathrm{SiLU}(z_t)$" + "\n" + r"Emits refined feature vector to Add & RMSNorm",
+                       fontsize=10.0, sub_fontsize=8.0, lw=1.4, rad=0.06)
+    draw_straight_arrow(ax, cx2, 9.15, cx2, 9.82)
 
-    draw_straight_arrow(ax, cx2, 11.15, cx2, 11.90, color='#7C3AED')
+    # 3. Multi-Scale Memory & CAFE Engine
+    create_rounded_box(ax, cx2, 7.30, 6.2, 3.30, '#ECFDF5', '#059669',
+                       "3. Multi-Scale State Update & CAFE Active Forgetting",
+                       r"• 17 KB State: $h_t = \bar{\mathbf{A}}(\Delta t) h_{t-1} + \bar{\mathbf{B}}(\Delta t) \tilde{x}_t$" + "\n" +
+                       r"• Persistent ($h_{\mathrm{perm}}$), Contextual ($h_{\mathrm{ctx}}$), Scratchpad ($h_{\mathrm{scr}}$)" + "\n" +
+                       r"• CAFE Subspace Nullification: $\mathbf{P}_\perp = \mathbf{I} - \mathbf{V}\mathbf{V}^T, \;\; h_t \leftarrow \mathbf{P}_\perp h_t$" + "\n" +
+                       r"• Continuous ODE: $\bar{\mathbf{A}} = \exp(-\Delta t \mathbf{A}), \;\; \bar{\mathbf{B}} = \Delta t \mathbf{B}(\tilde{x}_t)$",
+                       fontsize=10.0, sub_fontsize=8.0, lw=1.6, rad=0.06)
+    draw_straight_arrow(ax, cx2, 5.00, cx2, 5.65)
 
-    # 2. Gated SSM Output & State Projection
-    gate_box = FancyBboxPatch((cx2 - 3.10, 10.05), 6.2, 1.10, boxstyle="round,pad=0.0,rounding_size=0.08",
-                              facecolor='#FEF08A', edgecolor='#000000', linewidth=1.5, zorder=3)
-    ax.add_patch(gate_box)
-    ax.text(cx2, 10.78, r"Gated SSM Output: $y_t = ( \sum_{s=1}^{16} h_{t,s} C_{t,s} + D x_t ) \odot \mathrm{SiLU}(z_t)$",
-            ha='center', va='center', fontsize=9.4, fontweight='bold', color='#000000', zorder=4)
-    ax.text(cx2, 10.36, r"Multiplicative Gating branch $z_t = \mathrm{Linear}(u_t)$ regulates information flow",
-            ha='center', va='center', fontsize=8.2, color='#475569', zorder=4)
+    # 4. Input Fusion
+    create_rounded_box(ax, cx2, 4.35, 6.2, 0.95, '#F1F5F9', '#475569',
+                       "2. Input Fusion & Continuous ODE",
+                       r"$\tilde{x}_t = \mathrm{Linear}([x_t, z_t]), \;\; \Delta t = \mathrm{softplus}(\mathbf{W}_\Delta \tilde{x}_t)$",
+                       fontsize=9.8, sub_fontsize=8.2, lw=1.3, rad=0.06)
+    draw_straight_arrow(ax, cx2, 3.25, cx2, 3.87)
 
-    draw_straight_arrow(ax, cx2, 9.45, cx2, 10.05)
+    # 5. Dual-Stream Categorical Latents
+    create_rounded_box(ax, cx2, 1.85, 6.2, 2.35, '#F5F3FF', '#7C3AED',
+                       "1. Dual-Stream Categorical Latent World Model",
+                       r"• Prior Network: $p(z_t | h_{t-1}) = \mathrm{MLP}(h_{t-1})$" + "\n" +
+                       r"• Posterior Network: $q(z_t | h_{t-1}, x_t) = \mathrm{MLP}([h_{t-1}, x_t])$" + "\n" +
+                       r"• Surprise Gate: $\gamma_t = \mathcal{D}_{\mathrm{KL}}(q \parallel p)$ (Novelty-driven memory update)",
+                       fontsize=10.0, sub_fontsize=8.0, lw=1.6, rad=0.06)
+    draw_straight_arrow(ax, cx2, 0.40, cx2, 0.67)
 
-    # 3. Multi-Scale Working Memory & CAFE Engine (Centerpiece)
-    cafe_box = FancyBboxPatch((cx2 - 3.30, 4.30), 6.6, 5.15, boxstyle="round,pad=0.0,rounding_size=0.12",
-                              facecolor='#ECFDF5', edgecolor='#059669', linewidth=2.0, zorder=2)
-    ax.add_patch(cafe_box)
-
-    # Title Header Badge
-    create_rounded_box(ax, cx2, 9.15, 6.2, 0.44, '#059669', '#047857', "Cognitive Active Forgetting Engine (CAFE) & 17 KB Memory", fontsize=9.4, text_color='#FFFFFF')
-
-    # Left: Multi-Scale State Buffers
-    ms_box = FancyBboxPatch((cx2 - 3.05, 5.65), 2.90, 2.95, boxstyle="round,pad=0.0,rounding_size=0.06",
-                            facecolor=c_bg_ssm, edgecolor=c_bd_ssm, linewidth=1.4, zorder=3)
-    ax.add_patch(ms_box)
-    ax.text(cx2 - 1.60, 8.25, "Multi-Scale State Partition", ha='center', va='center', fontsize=9.2, fontweight='bold', color='#000000', zorder=4)
-    ax.text(cx2 - 1.60, 7.72, "• Persistent Memory ($h_{\\mathrm{perm}}$)", ha='center', va='center', fontsize=8.0, color='#065F46', zorder=4)
-    ax.text(cx2 - 1.60, 7.22, "• Contextual Flow ($h_{\\mathrm{ctx}}$)", ha='center', va='center', fontsize=8.0, color='#065F46', zorder=4)
-    ax.text(cx2 - 1.60, 6.72, "• Scratchpad Registers ($h_{\\mathrm{scr}}$)", ha='center', va='center', fontsize=8.0, color='#991B1B', zorder=4)
-    ax.text(cx2 - 1.60, 6.12, r"$h_t = \bar{\mathbf{A}}h_{t-1} + \bar{\mathbf{B}}\tilde{x}_t$  (17 KB / Layer)", ha='center', va='center', fontsize=7.6, fontweight='bold', color='#000000', zorder=4)
-
-    # Right: CAFE Subspace Eviction & Scratchpad Clearing
-    evict_box = FancyBboxPatch((cx2 + 0.15, 5.65), 2.90, 2.95, boxstyle="round,pad=0.0,rounding_size=0.06",
-                               facecolor=c_bg_cafe, edgecolor=c_bd_cafe, linewidth=1.4, zorder=3)
-    ax.add_patch(evict_box)
-    ax.text(cx2 + 1.60, 8.25, "Active Forgetting Operators", ha='center', va='center', fontsize=9.2, fontweight='bold', color='#065F46', zorder=4)
-    ax.text(cx2 + 1.60, 7.62, r"$\mathbf{P}_\perp = \mathbf{I} - \mathbf{V}(\mathbf{V}^T \mathbf{V})^{-1}\mathbf{V}^T$", ha='center', va='center', fontsize=8.2, fontweight='bold', color='#065F46', zorder=4)
-    ax.text(cx2 + 1.60, 7.12, r"Subspace Nullification: $h_t \leftarrow \mathbf{P}_\perp h_t$", ha='center', va='center', fontsize=7.8, color='#047857', zorder=4)
-    ax.text(cx2 + 1.60, 6.64, r"Scratchpad Evict: $h_{\mathrm{scr}} \leftarrow 0$", ha='center', va='center', fontsize=7.8, fontweight='bold', color='#991B1B', zorder=4)
-    ax.text(cx2 + 1.60, 6.12, r"$I(\mathrm{Target}; h_t) \equiv 0$ (100% Evict)", ha='center', va='center', fontsize=7.6, fontweight='bold', color='#065F46', zorder=4)
-
-    # Bidirectional communication arrow
-    ax.annotate("", xy=(cx2 + 0.15, 7.12), xytext=(cx2 - 0.15, 7.12),
-                arrowprops=dict(arrowstyle="<->", color='#059669', lw=2.0, mutation_scale=13), zorder=5)
-
-    ax.text(cx2, 4.88, r"Selective SSM Matrices: $\bar{\mathbf{A}} = \exp(-\Delta t \cdot \mathbf{A}), \;\; \bar{\mathbf{B}} = \Delta t \cdot \mathbf{B}(\tilde{x}_t), \;\; \mathbf{C} = \mathbf{C}(\tilde{x}_t)$",
-            ha='center', va='center', fontsize=8.6, fontweight='bold', color='#065F46', zorder=4)
-
-    draw_straight_arrow(ax, cx2, 3.75, cx2, 4.30)
-
-    # 4. Dual-Stream Categorical Latent World Model (Prior & Posterior)
-    prior_box = FancyBboxPatch((cx2 - 3.30, 1.35), 6.6, 2.4, boxstyle="round,pad=0.0,rounding_size=0.12",
-                               facecolor='#F5F3FF', edgecolor='#7C3AED', linewidth=2.0, zorder=2)
-    ax.add_patch(prior_box)
-
-    # Title Header Badge
-    create_rounded_box(ax, cx2, 3.48, 6.2, 0.42, '#6D28D9', '#4C1D95', "Dual-Stream Categorical Latent World Model", fontsize=10.2, text_color='#FFFFFF')
-
-    # Prior
-    create_rounded_box(ax, cx2 - 1.6, 2.50, 2.85, 1.20, c_bg_prior, c_bd_prior,
-                       "Prior Network",
-                       r"$p(z_t | h_{t-1})$" + "\n" + r"$\mathrm{MLP}(h_{t-1}) \to 8 \times 8$" + "\n(Autonomous Generation)",
-                       fontsize=9.2, sub_fontsize=7.4, rad=0.06)
-
-    # Posterior
-    create_rounded_box(ax, cx2 + 1.6, 2.50, 2.85, 1.20, '#EDE9FE', '#7C3AED',
-                       "Posterior Network",
-                       r"$q(z_t | h_{t-1}, x_t)$" + "\n" + r"$\mathrm{MLP}([h_{t-1}, x_t])$" + "\n(Teacher-Forced Training)",
-                       fontsize=9.2, sub_fontsize=7.4, rad=0.06)
-
-    # Surprise Gate KL badge
-    sg_box = FancyBboxPatch((cx2 - 2.6, 1.5), 5.2, 0.46, boxstyle="round,pad=0.0,rounding_size=0.04",
-                            facecolor='#FFFFFF', edgecolor='#7C3AED', linewidth=1.0, zorder=3)
-    ax.add_patch(sg_box)
-    ax.text(cx2, 1.73, r"Surprise Gate: $\mathcal{D}_{\mathrm{KL}}(q \parallel p) \to \text{Dynamically modulates SSM state update}$",
-            ha='center', va='center', fontsize=8.0, fontweight='bold', color='#5B21B6', zorder=4)
-
-    draw_straight_arrow(ax, cx2, 0.88, cx2, 1.35)
-
-    # Layer Input at bottom of Zoom
-    ax.text(cx2, 0.68, r"Input: $x_t^{(l-1)} \in \mathbb{R}^{B \times d_{\mathrm{model}}}$  (Fused Token + Latent Vector $\tilde{x}_t$)",
-            ha='center', va='center', fontsize=10.5, fontweight='bold', color='#000000')
-
-    # =========================================================================
-    # FOOTER & COMPARISON BANNER
-    # =========================================================================
-    banner = FancyBboxPatch((0.9, 0.04), 15.2, 0.32, boxstyle="round,pad=0.0,rounding_size=0.05",
-                            facecolor='#0F172A', edgecolor='#000000', linewidth=1.2, zorder=2)
-    ax.add_patch(banner)
-    ax.text(8.5, 0.20,
-            "Key Breakthroughs: ① O(1) Constant Working Memory (17 KB)  •  ② Zero Softmax Attention Bottleneck  •  ③ CAFE Privacy Forgetting (P_⊥)  •  ④ Zero-Token Latent MCTS Planning",
-            ha='center', va='center', fontsize=8.2, fontweight='bold', color='#F8FAFC', zorder=3)
+    # Bottom Input Label
+    ax.text(cx2, 0.28, r"Current Input $x_t$ & Recurrent Memory $h_{t-1}$", ha='center', va='center', fontsize=9.5, fontweight='bold', color='#0F172A')
 
     out_dir = "/home/eun/neuroworld_lm/figures"
     os.makedirs(out_dir, exist_ok=True)
@@ -356,51 +317,59 @@ def render_true_architecture():
     plt.savefig(pdf_path, format='pdf', bbox_inches='tight')
     plt.close()
 
-    # Sync to paper
+    # Sync to fig1 and paper
+    fig1_png = os.path.join(out_dir, "fig1_model_architecture.png")
+    fig1_pdf = os.path.join(out_dir, "fig1_model_architecture.pdf")
+    shutil.copy2(png_path, fig1_png)
+    shutil.copy2(pdf_path, fig1_pdf)
+
     paper_fig_dir = "/home/eun/neuroworld_lm/paper/figures"
     if os.path.exists(paper_fig_dir):
+        shutil.copy2(png_path, os.path.join(paper_fig_dir, "hokie_model_architecture.png"))
+        shutil.copy2(pdf_path, os.path.join(paper_fig_dir, "hokie_model_architecture.pdf"))
+        shutil.copy2(png_path, os.path.join(paper_fig_dir, "fig1_model_architecture.png"))
         shutil.copy2(pdf_path, os.path.join(paper_fig_dir, "fig1_model_architecture.pdf"))
 
-    print(f"[✓] Dual-Panel Architecture Diagram saved to: {png_path}")
+    print(f"[✓] Streamlined Architecture Diagram with Autoregressive Loop saved to: {png_path}")
+
 
 def render_classic_single_plate_true():
-    """Generates the True Single-Column Plate without Softmax attention/top bottlenecks."""
-    fig, ax = plt.subplots(figsize=(8.5, 13.8), dpi=300)
+    """Generates the Single-Column Minimalist Plate exactly matching the clean user diagram."""
+    fig, ax = plt.subplots(figsize=(8.0, 13.5), dpi=300)
     fig.patch.set_facecolor('#FFFFFF')
     ax.set_facecolor('#FFFFFF')
-    ax.set_xlim(0, 8.5)
-    ax.set_ylim(0, 13.8)
+    ax.set_xlim(0, 8.0)
+    ax.set_ylim(0, 13.5)
     ax.axis('off')
 
-    c_bg_embed = '#FCE7F3'     # Soft Rose / Pink
+    c_bg_embed = '#FCE7F3'
     c_bd_embed = '#000000'
-    c_bg_norm  = '#FEF08A'     # Soft Yellow
+    c_bg_norm  = '#FEF08A'
     c_bd_norm  = '#000000'
-    c_bg_ssm   = '#FFEDD5'     # Soft Peach / Orange
+    c_bg_ssm   = '#FFEDD5'
     c_bd_ssm   = '#000000'
-    c_bg_ffn   = '#BAE6FD'     # Soft Sky Blue
+    c_bg_ffn   = '#BAE6FD'
     c_bd_ffn   = '#000000'
-    c_bg_head  = '#E0E7FF'     # Soft Indigo
+    c_bg_head  = '#E0E7FF'
     c_bd_head  = '#000000'
 
-    cx = 4.25
+    cx = 4.4
 
-    # Top: Next-Token Logits Output (No Softmax block!)
-    ax.text(cx, 13.15, "Output Next-Token\nLogits " + r"$\hat{y}_t \in \mathbb{R}^{V}$", ha='center', va='center', fontsize=12.5, fontweight='bold', color='#000000')
-    ax.text(cx, 12.60, "(Direct Cross-Entropy Loss / Top-p Sampling)", ha='center', va='center', fontsize=8.4, color='#64748B')
-    draw_straight_arrow(ax, cx, 11.85, cx, 12.40)
+    # Top: Next Token Output
+    create_rounded_box(ax, cx, 12.35, 3.4, 0.55, '#F1F5F9', '#DC2626', r"Output Token $\hat{x}_{t+1}$", fontsize=11, text_color='#DC2626', lw=1.8)
+    draw_straight_arrow(ax, cx, 11.60, cx, 12.07)
 
     # Linear LM Head
-    create_rounded_box(ax, cx, 11.52, 3.6, 0.58, c_bg_head, c_bd_head, "Linear (LM Head)", r"Tied Token Weights ($d_{\mathrm{model}} \to 50,266$)", fontsize=10.5, sub_fontsize=7.8)
-    draw_straight_arrow(ax, cx, 10.55, cx, 11.23)
+    create_rounded_box(ax, cx, 11.35, 3.4, 0.52, c_bg_head, c_bd_head, "Linear LM Head", fontsize=11)
+    draw_straight_arrow(ax, cx, 10.50, cx, 11.09)
 
     # Final RMSNorm
-    create_rounded_box(ax, cx, 10.28, 3.6, 0.48, c_bg_norm, c_bd_norm, "Final RMSNorm", fontsize=10.5)
-    draw_straight_arrow(ax, cx, 9.45, cx, 10.04)
+    create_rounded_box(ax, cx, 10.25, 3.4, 0.46, c_bg_norm, c_bd_norm, "Final RMSNorm", fontsize=10.5)
+    draw_straight_arrow(ax, cx, 9.40, cx, 10.02)
 
     # N x Stack Box
     stack_box = FancyBboxPatch(
-        (cx - 2.40, 2.35), 4.8, 6.75,
+        (cx - 2.40, 2.25), 4.8, 7.50,
         boxstyle="round,pad=0.0,rounding_size=0.18",
         facecolor='#FFFFFF',
         edgecolor='#000000',
@@ -409,28 +378,26 @@ def render_classic_single_plate_true():
     )
     ax.add_patch(stack_box)
     
-    # Nx Label placed with clear margin to the right
-    ax.text(cx + 2.95, 5.85, r"$N\times$", ha='center', va='center', fontsize=20, fontweight='bold', color='#000000')
-    ax.text(cx + 2.95, 5.35, "(24 Layers)", ha='center', va='center', fontsize=8.8, fontweight='bold', color='#64748B')
+    ax.text(cx + 3.05, 6.00, r"$N\times$", ha='center', va='center', fontsize=20, fontweight='bold', color='#000000')
 
     # Add & RMSNorm (Top)
-    create_rounded_box(ax, cx, 8.55, 3.4, 0.48, c_bg_norm, c_bd_norm, "Add & RMSNorm", fontsize=11)
-    draw_straight_arrow(ax, cx, 7.72, cx, 8.31)
+    create_rounded_box(ax, cx, 8.85, 3.3, 0.46, c_bg_norm, c_bd_norm, "Add & RMSNorm", fontsize=10.8)
+    draw_straight_arrow(ax, cx, 8.00, cx, 8.62)
 
     # Feed Forward (SwiGLU)
-    create_rounded_box(ax, cx, 7.25, 3.4, 0.85, c_bg_ffn, c_bd_ffn, "Feed Forward", r"$\mathrm{SwiGLU}(x) = W_3(\mathrm{SiLU}(W_1 x) \odot W_2 x)$" + "\n(4096-dim / Latent Rollout Planner)", fontsize=10.8, sub_fontsize=7.8)
-    draw_straight_arrow(ax, cx, 6.28, cx, 6.82)
+    create_rounded_box(ax, cx, 7.45, 3.3, 0.85, c_bg_ffn, c_bd_ffn, "SwiGLU FFN", fontsize=11)
+    draw_straight_arrow(ax, cx, 6.45, cx, 7.02)
 
-    # Skip 2 around FFN (into side of top Add & RMSNorm)
-    draw_classic_skip(ax, cx, 6.52, cx + 1.70, 8.55, cx + 2.10, lw=1.6)
+    # Skip 2 around FFN
+    draw_classic_skip(ax, cx, 6.70, cx + 1.65, 8.85, cx + 2.05, lw=1.6)
 
     # Add & RMSNorm (Middle)
-    create_rounded_box(ax, cx, 6.02, 3.4, 0.48, c_bg_norm, c_bd_norm, "Add & RMSNorm", fontsize=11)
-    draw_straight_arrow(ax, cx, 5.15, cx, 5.78)
+    create_rounded_box(ax, cx, 6.18, 3.3, 0.46, c_bg_norm, c_bd_norm, "Add & RMSNorm", fontsize=10.8)
+    draw_straight_arrow(ax, cx, 5.25, cx, 5.95)
 
-    # Exact Selective SSM Core with Latent Prior & CAFE
+    # RSSM Block
     ssm_box = FancyBboxPatch(
-        (cx - 1.70, 2.80), 3.4, 2.30,
+        (cx - 1.65, 2.85), 3.3, 2.60,
         boxstyle="round,pad=0.0,rounding_size=0.08",
         facecolor=c_bg_ssm,
         edgecolor=c_bd_ssm,
@@ -438,45 +405,31 @@ def render_classic_single_plate_true():
         zorder=3
     )
     ax.add_patch(ssm_box)
-    ax.text(cx, 4.85, "Cognitive RSSM Block", ha='center', va='center', fontsize=11.2, fontweight='bold', color='#000000', zorder=4)
-    
-    # Internal sub-boxes
-    ssm_sub1 = FancyBboxPatch((cx - 1.50, 4.10), 3.0, 0.45, boxstyle="round,pad=0.0,rounding_size=0.04",
-                              facecolor='#FEF3C7', edgecolor='#D97706', linewidth=0.9, zorder=4)
-    ax.add_patch(ssm_sub1)
-    ax.text(cx, 4.32, r"Categorical Prior: $z_t \sim q(z_t|h_t)$", ha='center', va='center', fontsize=7.8, fontweight='bold', color='#78350F', zorder=5)
+    ax.text(cx, 5.15, "RSSM Block", ha='center', va='center', fontsize=11.5, fontweight='bold', color='#000000', zorder=4)
 
-    ssm_sub2 = FancyBboxPatch((cx - 1.50, 2.95), 3.0, 1.02, boxstyle="round,pad=0.0,rounding_size=0.04",
-                              facecolor='#ECFDF5', edgecolor='#059669', linewidth=0.9, zorder=4)
-    ax.add_patch(ssm_sub2)
-    ax.text(cx, 3.62, r"Continuous SSM: $h_t = \bar{\mathbf{A}}h_{t-1} + \bar{\mathbf{B}}\tilde{x}_t$", ha='center', va='center', fontsize=7.8, fontweight='bold', color='#065F46', zorder=5)
-    ax.text(cx, 3.25, r"CAFE Forgetting: $\mathbf{P}_\perp = \mathbf{I} - \mathbf{V}\mathbf{V}^T$", ha='center', va='center', fontsize=7.5, fontweight='bold', color='#047857', zorder=5)
+    # CAFE
+    create_rounded_box(ax, cx, 4.40, 2.9, 0.55, '#ECFDF5', '#059669', "CAFE", fontsize=10.2, lw=1.2, text_color='#065F46')
 
-    draw_straight_arrow(ax, cx, 1.95, cx, 2.80)
+    # Rollout Planner
+    create_rounded_box(ax, cx, 3.45, 2.9, 0.75, '#F5F3FF', '#7C3AED', "Rollout Planner", fontsize=10.2, lw=1.2, text_color='#5B21B6')
 
-    # Skip 1 around SSM (into side of middle Add & RMSNorm, starting cleanly inside stack box)
-    draw_classic_skip(ax, cx, 2.58, cx + 1.70, 6.02, cx + 2.10, lw=1.6)
+    draw_straight_arrow(ax, cx, 1.85, cx, 2.85)
 
-    # Delta t Continuous Dynamics
-    circle_dt = Circle((cx - 1.85, 1.75), 0.32, facecolor='#FFFFFF', edgecolor='#000000', linewidth=1.6, zorder=3)
-    ax.add_patch(circle_dt)
-    ax.text(cx - 1.85, 1.75, r"$\Delta t$", ha='center', va='center', fontsize=12, fontweight='bold', color='#000000', zorder=4)
-    ax.text(cx - 1.85, 1.20, "Continuous\nODE Dynamics", ha='center', va='center', fontsize=7.8, fontweight='bold', color='#000000')
+    # Skip 1 around SSM
+    draw_classic_skip(ax, cx, 2.35, cx + 1.65, 6.18, cx + 2.05, lw=1.6)
 
-    # Summing (+)
-    circle_sum = Circle((cx, 1.75), 0.22, facecolor='#FFFFFF', edgecolor='#000000', linewidth=1.6, zorder=3)
-    ax.add_patch(circle_sum)
-    ax.text(cx, 1.75, "+", ha='center', va='center', fontsize=13, fontweight='bold', color='#000000', zorder=4)
-
-    draw_straight_arrow(ax, cx - 1.53, 1.75, cx - 0.22, 1.75)
-    draw_straight_arrow(ax, cx, 1.05, cx, 1.53)
+    # Direct Trunk Arrow
+    draw_straight_arrow(ax, cx, 1.30, cx, 1.85)
 
     # Input Embedding
-    create_rounded_box(ax, cx, 0.82, 3.4, 0.48, c_bg_embed, c_bd_embed, "Token Embedding", r"Vocab: 50,266 | $d_{\mathrm{model}} = 1024$", fontsize=10.5, sub_fontsize=7.8)
-    draw_straight_arrow(ax, cx, 0.28, cx, 0.58)
+    create_rounded_box(ax, cx, 1.05, 3.4, 0.52, c_bg_embed, c_bd_embed, "Embedding", fontsize=11)
+    draw_straight_arrow(ax, cx, 0.50, cx, 0.79)
 
-    # Inputs
-    ax.text(cx, 0.12, r"Inputs $(x_1, x_2, \dots, x_t)$", ha='center', va='center', fontsize=11.5, fontweight='bold', color='#000000')
+    # Input Box
+    create_rounded_box(ax, cx, 0.28, 3.4, 0.45, '#F8FAFC', '#0F172A', "Input", fontsize=11)
+
+    # Autoregressive Loop
+    draw_autoregressive_loop(ax, cx - 1.70, 12.35, cx - 1.70, 0.28, route_x=1.00, color='#DC2626', lw=1.8, label="Autoregressive Loop (t -> t+1)")
 
     out_dir = "/home/eun/neuroworld_lm/figures"
     plate_path = os.path.join(out_dir, "hokie_architecture_classic_plate.png")
@@ -487,20 +440,13 @@ def render_classic_single_plate_true():
     plt.savefig(plate_svg, format='svg', bbox_inches='tight')
     plt.close()
 
-    # Overwrite fig1_model_architecture with single-column plate
-    fig1_png = os.path.join(out_dir, "fig1_model_architecture.png")
-    fig1_pdf = os.path.join(out_dir, "fig1_model_architecture.pdf")
-    shutil.copy2(plate_png if 'plate_png' in locals() else plate_path, fig1_png)
-    shutil.copy2(plate_pdf, fig1_pdf)
-
     paper_fig_dir = "/home/eun/neuroworld_lm/paper/figures"
     if os.path.exists(paper_fig_dir):
         shutil.copy2(plate_path, os.path.join(paper_fig_dir, "hokie_architecture_classic_plate.png"))
         shutil.copy2(plate_pdf, os.path.join(paper_fig_dir, "hokie_architecture_classic_plate.pdf"))
-        shutil.copy2(fig1_png, os.path.join(paper_fig_dir, "fig1_model_architecture.png"))
-        shutil.copy2(fig1_pdf, os.path.join(paper_fig_dir, "fig1_model_architecture.pdf"))
 
-    print(f"[✓] Classic Single-Column Plate saved to: {plate_path} and synced to {fig1_png}")
+    print(f"[✓] Single-Column Plate saved to: {plate_path}")
+
 
 if __name__ == "__main__":
     render_true_architecture()

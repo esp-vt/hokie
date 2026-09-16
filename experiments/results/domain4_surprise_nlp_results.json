@@ -1,0 +1,1118 @@
+{
+  "category_summary": {
+    "stopwords": {
+      "count": 13,
+      "mean_surprise": 0.7393,
+      "std_surprise": 0.0079,
+      "max_surprise": 0.7543
+    },
+    "content_words": {
+      "count": 105,
+      "mean_surprise": 0.7417,
+      "std_surprise": 0.0086,
+      "max_surprise": 0.7681
+    },
+    "technical_terms": {
+      "count": 6,
+      "mean_surprise": 0.7402,
+      "std_surprise": 0.0043,
+      "max_surprise": 0.7472
+    },
+    "punctuation": {
+      "count": 12,
+      "mean_surprise": 0.7381,
+      "std_surprise": 0.0102,
+      "max_surprise": 0.7537
+    }
+  },
+  "token_series": [
+    {
+      "token_index": 0,
+      "token": "State",
+      "category": "content_words",
+      "kl_divergence": 0.1049,
+      "surprise_gamma": 0.747,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 1,
+      "token": "space",
+      "category": "content_words",
+      "kl_divergence": 0.082,
+      "surprise_gamma": 0.735,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 2,
+      "token": "models",
+      "category": "content_words",
+      "kl_divergence": 0.1237,
+      "surprise_gamma": 0.7569,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 3,
+      "token": "provide",
+      "category": "content_words",
+      "kl_divergence": 0.0987,
+      "surprise_gamma": 0.7437,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 4,
+      "token": "an",
+      "category": "stopwords",
+      "kl_divergence": 0.0667,
+      "surprise_gamma": 0.727,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 5,
+      "token": "efficient",
+      "category": "content_words",
+      "kl_divergence": 0.0933,
+      "surprise_gamma": 0.7409,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 6,
+      "token": "linear",
+      "category": "content_words",
+      "kl_divergence": 0.1203,
+      "surprise_gamma": 0.7551,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 7,
+      "token": "-",
+      "category": "punctuation",
+      "kl_divergence": 0.0719,
+      "surprise_gamma": 0.7297,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 8,
+      "token": "time",
+      "category": "content_words",
+      "kl_divergence": 0.1061,
+      "surprise_gamma": 0.7476,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 9,
+      "token": "rec",
+      "category": "content_words",
+      "kl_divergence": 0.0917,
+      "surprise_gamma": 0.7401,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 10,
+      "token": "urrence",
+      "category": "content_words",
+      "kl_divergence": 0.0924,
+      "surprise_gamma": 0.7404,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 11,
+      "token": "for",
+      "category": "stopwords",
+      "kl_divergence": 0.0861,
+      "surprise_gamma": 0.7371,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 12,
+      "token": "deep",
+      "category": "content_words",
+      "kl_divergence": 0.0684,
+      "surprise_gamma": 0.7279,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 13,
+      "token": "sequence",
+      "category": "content_words",
+      "kl_divergence": 0.0744,
+      "surprise_gamma": 0.731,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 14,
+      "token": "modeling",
+      "category": "content_words",
+      "kl_divergence": 0.0668,
+      "surprise_gamma": 0.7271,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 15,
+      "token": ".",
+      "category": "punctuation",
+      "kl_divergence": 0.1177,
+      "surprise_gamma": 0.7537,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 16,
+      "token": "Unlike",
+      "category": "content_words",
+      "kl_divergence": 0.0816,
+      "surprise_gamma": 0.7348,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 17,
+      "token": "standard",
+      "category": "technical_terms",
+      "kl_divergence": 0.0943,
+      "surprise_gamma": 0.7414,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 18,
+      "token": "Trans",
+      "category": "content_words",
+      "kl_divergence": 0.0685,
+      "surprise_gamma": 0.728,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 19,
+      "token": "former",
+      "category": "content_words",
+      "kl_divergence": 0.103,
+      "surprise_gamma": 0.746,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 20,
+      "token": "attention",
+      "category": "content_words",
+      "kl_divergence": 0.1141,
+      "surprise_gamma": 0.7518,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 21,
+      "token": "which",
+      "category": "stopwords",
+      "kl_divergence": 0.0743,
+      "surprise_gamma": 0.731,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 22,
+      "token": "requires",
+      "category": "content_words",
+      "kl_divergence": 0.0891,
+      "surprise_gamma": 0.7387,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 23,
+      "token": "quad",
+      "category": "content_words",
+      "kl_divergence": 0.109,
+      "surprise_gamma": 0.7492,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 24,
+      "token": "r",
+      "category": "content_words",
+      "kl_divergence": 0.0921,
+      "surprise_gamma": 0.7403,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 25,
+      "token": "atic",
+      "category": "content_words",
+      "kl_divergence": 0.1045,
+      "surprise_gamma": 0.7467,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 26,
+      "token": "K",
+      "category": "content_words",
+      "kl_divergence": 0.1188,
+      "surprise_gamma": 0.7543,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 27,
+      "token": "V",
+      "category": "content_words",
+      "kl_divergence": 0.0895,
+      "surprise_gamma": 0.7389,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 28,
+      "token": "-",
+      "category": "punctuation",
+      "kl_divergence": 0.0728,
+      "surprise_gamma": 0.7302,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 29,
+      "token": "cache",
+      "category": "content_words",
+      "kl_divergence": 0.1002,
+      "surprise_gamma": 0.7445,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 30,
+      "token": "memory",
+      "category": "content_words",
+      "kl_divergence": 0.088,
+      "surprise_gamma": 0.7381,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 31,
+      "token": ",",
+      "category": "punctuation",
+      "kl_divergence": 0.0798,
+      "surprise_gamma": 0.7338,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 32,
+      "token": "recurrent",
+      "category": "content_words",
+      "kl_divergence": 0.0889,
+      "surprise_gamma": 0.7386,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 33,
+      "token": "state",
+      "category": "content_words",
+      "kl_divergence": 0.1043,
+      "surprise_gamma": 0.7467,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 34,
+      "token": "updates",
+      "category": "technical_terms",
+      "kl_divergence": 0.0775,
+      "surprise_gamma": 0.7326,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 35,
+      "token": "maintain",
+      "category": "content_words",
+      "kl_divergence": 0.0962,
+      "surprise_gamma": 0.7424,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 36,
+      "token": "constant",
+      "category": "content_words",
+      "kl_divergence": 0.0934,
+      "surprise_gamma": 0.7409,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 37,
+      "token": "-",
+      "category": "punctuation",
+      "kl_divergence": 0.0559,
+      "surprise_gamma": 0.7215,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 38,
+      "token": "time",
+      "category": "content_words",
+      "kl_divergence": 0.1106,
+      "surprise_gamma": 0.75,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 39,
+      "token": "inference",
+      "category": "content_words",
+      "kl_divergence": 0.0873,
+      "surprise_gamma": 0.7377,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 40,
+      "token": "through",
+      "category": "content_words",
+      "kl_divergence": 0.0661,
+      "surprise_gamma": 0.7268,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 41,
+      "token": "disc",
+      "category": "content_words",
+      "kl_divergence": 0.1042,
+      "surprise_gamma": 0.7466,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 42,
+      "token": "ret",
+      "category": "content_words",
+      "kl_divergence": 0.0894,
+      "surprise_gamma": 0.7389,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 43,
+      "token": "ized",
+      "category": "content_words",
+      "kl_divergence": 0.1096,
+      "surprise_gamma": 0.7495,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 44,
+      "token": "Hur",
+      "category": "content_words",
+      "kl_divergence": 0.0948,
+      "surprise_gamma": 0.7417,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 45,
+      "token": "witz",
+      "category": "content_words",
+      "kl_divergence": 0.1179,
+      "surprise_gamma": 0.7538,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 46,
+      "token": "transition",
+      "category": "content_words",
+      "kl_divergence": 0.0788,
+      "surprise_gamma": 0.7333,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 47,
+      "token": "operators",
+      "category": "content_words",
+      "kl_divergence": 0.1184,
+      "surprise_gamma": 0.7541,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 48,
+      "token": ".",
+      "category": "punctuation",
+      "kl_divergence": 0.102,
+      "surprise_gamma": 0.7455,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 49,
+      "token": "The",
+      "category": "stopwords",
+      "kl_divergence": 0.1081,
+      "surprise_gamma": 0.7487,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 50,
+      "token": "NVIDIA",
+      "category": "technical_terms",
+      "kl_divergence": 0.1052,
+      "surprise_gamma": 0.7472,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 51,
+      "token": "H",
+      "category": "content_words",
+      "kl_divergence": 0.0856,
+      "surprise_gamma": 0.7369,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 52,
+      "token": "100",
+      "category": "content_words",
+      "kl_divergence": 0.0995,
+      "surprise_gamma": 0.7441,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 53,
+      "token": "GPU",
+      "category": "technical_terms",
+      "kl_divergence": 0.0893,
+      "surprise_gamma": 0.7388,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 54,
+      "token": "lever",
+      "category": "content_words",
+      "kl_divergence": 0.0871,
+      "surprise_gamma": 0.7376,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 55,
+      "token": "ages",
+      "category": "content_words",
+      "kl_divergence": 0.1061,
+      "surprise_gamma": 0.7476,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 56,
+      "token": "high",
+      "category": "content_words",
+      "kl_divergence": 0.1031,
+      "surprise_gamma": 0.746,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 57,
+      "token": "-",
+      "category": "punctuation",
+      "kl_divergence": 0.0604,
+      "surprise_gamma": 0.7238,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 58,
+      "token": "band",
+      "category": "content_words",
+      "kl_divergence": 0.1176,
+      "surprise_gamma": 0.7537,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 59,
+      "token": "width",
+      "category": "content_words",
+      "kl_divergence": 0.0616,
+      "surprise_gamma": 0.7244,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 60,
+      "token": "memory",
+      "category": "content_words",
+      "kl_divergence": 0.0717,
+      "surprise_gamma": 0.7296,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 61,
+      "token": "and",
+      "category": "stopwords",
+      "kl_divergence": 0.0806,
+      "surprise_gamma": 0.7343,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 62,
+      "token": "tens",
+      "category": "content_words",
+      "kl_divergence": 0.1044,
+      "surprise_gamma": 0.7467,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 63,
+      "token": "or",
+      "category": "content_words",
+      "kl_divergence": 0.0734,
+      "surprise_gamma": 0.7305,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 64,
+      "token": "cores",
+      "category": "content_words",
+      "kl_divergence": 0.1143,
+      "surprise_gamma": 0.7519,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 65,
+      "token": "to",
+      "category": "stopwords",
+      "kl_divergence": 0.1188,
+      "surprise_gamma": 0.7543,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 66,
+      "token": "accelerate",
+      "category": "content_words",
+      "kl_divergence": 0.1004,
+      "surprise_gamma": 0.7446,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 67,
+      "token": "associ",
+      "category": "content_words",
+      "kl_divergence": 0.0913,
+      "surprise_gamma": 0.7398,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 68,
+      "token": "ative",
+      "category": "content_words",
+      "kl_divergence": 0.0826,
+      "surprise_gamma": 0.7353,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 69,
+      "token": "parallel",
+      "category": "content_words",
+      "kl_divergence": 0.0853,
+      "surprise_gamma": 0.7367,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 70,
+      "token": "scans",
+      "category": "content_words",
+      "kl_divergence": 0.1064,
+      "surprise_gamma": 0.7477,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 71,
+      "token": ".",
+      "category": "punctuation",
+      "kl_divergence": 0.09,
+      "surprise_gamma": 0.7391,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 72,
+      "token": "",
+      "category": "content_words",
+      "kl_divergence": 0.1096,
+      "surprise_gamma": 0.7495,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 73,
+      "token": "",
+      "category": "content_words",
+      "kl_divergence": 0.1133,
+      "surprise_gamma": 0.7514,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 74,
+      "token": "[",
+      "category": "content_words",
+      "kl_divergence": 0.0751,
+      "surprise_gamma": 0.7314,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 75,
+      "token": "TOP",
+      "category": "content_words",
+      "kl_divergence": 0.1021,
+      "surprise_gamma": 0.7455,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 76,
+      "token": "IC",
+      "category": "content_words",
+      "kl_divergence": 0.0812,
+      "surprise_gamma": 0.7346,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 77,
+      "token": "_",
+      "category": "content_words",
+      "kl_divergence": 0.0983,
+      "surprise_gamma": 0.7435,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 78,
+      "token": "SH",
+      "category": "content_words",
+      "kl_divergence": 0.1133,
+      "surprise_gamma": 0.7514,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 79,
+      "token": "IFT",
+      "category": "content_words",
+      "kl_divergence": 0.0787,
+      "surprise_gamma": 0.7333,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 80,
+      "token": "]",
+      "category": "content_words",
+      "kl_divergence": 0.1032,
+      "surprise_gamma": 0.7461,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 81,
+      "token": "",
+      "category": "content_words",
+      "kl_divergence": 0.109,
+      "surprise_gamma": 0.7491,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 82,
+      "token": "",
+      "category": "content_words",
+      "kl_divergence": 0.1143,
+      "surprise_gamma": 0.7519,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 83,
+      "token": "During",
+      "category": "content_words",
+      "kl_divergence": 0.0814,
+      "surprise_gamma": 0.7347,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 84,
+      "token": "the",
+      "category": "stopwords",
+      "kl_divergence": 0.0896,
+      "surprise_gamma": 0.739,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 85,
+      "token": "Italian",
+      "category": "content_words",
+      "kl_divergence": 0.0915,
+      "surprise_gamma": 0.7399,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 86,
+      "token": "Renaissance",
+      "category": "technical_terms",
+      "kl_divergence": 0.0902,
+      "surprise_gamma": 0.7392,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 87,
+      "token": ",",
+      "category": "punctuation",
+      "kl_divergence": 0.1012,
+      "surprise_gamma": 0.745,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 88,
+      "token": "master",
+      "category": "content_words",
+      "kl_divergence": 0.1015,
+      "surprise_gamma": 0.7452,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 89,
+      "token": "artists",
+      "category": "content_words",
+      "kl_divergence": 0.1151,
+      "surprise_gamma": 0.7524,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 90,
+      "token": "revolution",
+      "category": "content_words",
+      "kl_divergence": 0.0951,
+      "surprise_gamma": 0.7418,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 91,
+      "token": "ized",
+      "category": "content_words",
+      "kl_divergence": 0.0932,
+      "surprise_gamma": 0.7409,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 92,
+      "token": "visual",
+      "category": "content_words",
+      "kl_divergence": 0.093,
+      "surprise_gamma": 0.7407,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 93,
+      "token": "perspective",
+      "category": "content_words",
+      "kl_divergence": 0.0806,
+      "surprise_gamma": 0.7343,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 94,
+      "token": "and",
+      "category": "stopwords",
+      "kl_divergence": 0.0952,
+      "surprise_gamma": 0.7419,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 95,
+      "token": "pigment",
+      "category": "content_words",
+      "kl_divergence": 0.1048,
+      "surprise_gamma": 0.7469,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 96,
+      "token": "formulation",
+      "category": "content_words",
+      "kl_divergence": 0.0876,
+      "surprise_gamma": 0.7379,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 97,
+      "token": ".",
+      "category": "punctuation",
+      "kl_divergence": 0.0857,
+      "surprise_gamma": 0.7369,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 98,
+      "token": "Leonardo",
+      "category": "content_words",
+      "kl_divergence": 0.1063,
+      "surprise_gamma": 0.7477,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 99,
+      "token": "da",
+      "category": "technical_terms",
+      "kl_divergence": 0.0949,
+      "surprise_gamma": 0.7417,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 100,
+      "token": "Vin",
+      "category": "content_words",
+      "kl_divergence": 0.0972,
+      "surprise_gamma": 0.743,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 101,
+      "token": "ci",
+      "category": "content_words",
+      "kl_divergence": 0.0713,
+      "surprise_gamma": 0.7294,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 102,
+      "token": "utilized",
+      "category": "content_words",
+      "kl_divergence": 0.0826,
+      "surprise_gamma": 0.7353,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 103,
+      "token": "delicate",
+      "category": "content_words",
+      "kl_divergence": 0.0763,
+      "surprise_gamma": 0.732,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 104,
+      "token": "s",
+      "category": "content_words",
+      "kl_divergence": 0.0713,
+      "surprise_gamma": 0.7294,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 105,
+      "token": "f",
+      "category": "content_words",
+      "kl_divergence": 0.1096,
+      "surprise_gamma": 0.7495,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 106,
+      "token": "um",
+      "category": "content_words",
+      "kl_divergence": 0.0939,
+      "surprise_gamma": 0.7412,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 107,
+      "token": "ato",
+      "category": "content_words",
+      "kl_divergence": 0.1115,
+      "surprise_gamma": 0.7505,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 108,
+      "token": "techniques",
+      "category": "content_words",
+      "kl_divergence": 0.0938,
+      "surprise_gamma": 0.7412,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 109,
+      "token": "to",
+      "category": "stopwords",
+      "kl_divergence": 0.0904,
+      "surprise_gamma": 0.7394,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 110,
+      "token": "achieve",
+      "category": "content_words",
+      "kl_divergence": 0.1206,
+      "surprise_gamma": 0.7553,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 111,
+      "token": "subtle",
+      "category": "content_words",
+      "kl_divergence": 0.1305,
+      "surprise_gamma": 0.7605,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 112,
+      "token": "ton",
+      "category": "content_words",
+      "kl_divergence": 0.089,
+      "surprise_gamma": 0.7386,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 113,
+      "token": "al",
+      "category": "content_words",
+      "kl_divergence": 0.0826,
+      "surprise_gamma": 0.7353,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 114,
+      "token": "grad",
+      "category": "content_words",
+      "kl_divergence": 0.1009,
+      "surprise_gamma": 0.7449,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 115,
+      "token": "ients",
+      "category": "content_words",
+      "kl_divergence": 0.0798,
+      "surprise_gamma": 0.7338,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 116,
+      "token": "across",
+      "category": "content_words",
+      "kl_divergence": 0.115,
+      "surprise_gamma": 0.7523,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 117,
+      "token": "port",
+      "category": "content_words",
+      "kl_divergence": 0.0775,
+      "surprise_gamma": 0.7326,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 118,
+      "token": "ra",
+      "category": "content_words",
+      "kl_divergence": 0.0582,
+      "surprise_gamma": 0.7227,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 119,
+      "token": "iture",
+      "category": "content_words",
+      "kl_divergence": 0.0925,
+      "surprise_gamma": 0.7405,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 120,
+      "token": ".",
+      "category": "punctuation",
+      "kl_divergence": 0.0995,
+      "surprise_gamma": 0.7441,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 121,
+      "token": "The",
+      "category": "stopwords",
+      "kl_divergence": 0.1109,
+      "surprise_gamma": 0.7502,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 122,
+      "token": "cultural",
+      "category": "content_words",
+      "kl_divergence": 0.0828,
+      "surprise_gamma": 0.7354,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 123,
+      "token": "synthesis",
+      "category": "content_words",
+      "kl_divergence": 0.0622,
+      "surprise_gamma": 0.7247,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 124,
+      "token": "of",
+      "category": "stopwords",
+      "kl_divergence": 0.0961,
+      "surprise_gamma": 0.7424,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 125,
+      "token": "classical",
+      "category": "content_words",
+      "kl_divergence": 0.0863,
+      "surprise_gamma": 0.7372,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 126,
+      "token": "antiquity",
+      "category": "content_words",
+      "kl_divergence": 0.1008,
+      "surprise_gamma": 0.7448,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 127,
+      "token": "and",
+      "category": "stopwords",
+      "kl_divergence": 0.0705,
+      "surprise_gamma": 0.729,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 128,
+      "token": "human",
+      "category": "content_words",
+      "kl_divergence": 0.1004,
+      "surprise_gamma": 0.7446,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 129,
+      "token": "ism",
+      "category": "content_words",
+      "kl_divergence": 0.0634,
+      "surprise_gamma": 0.7254,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 130,
+      "token": "flourished",
+      "category": "content_words",
+      "kl_divergence": 0.1078,
+      "surprise_gamma": 0.7485,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 131,
+      "token": "throughout",
+      "category": "content_words",
+      "kl_divergence": 0.1446,
+      "surprise_gamma": 0.7681,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 132,
+      "token": "Florence",
+      "category": "content_words",
+      "kl_divergence": 0.0907,
+      "surprise_gamma": 0.7395,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 133,
+      "token": "and",
+      "category": "stopwords",
+      "kl_divergence": 0.0851,
+      "surprise_gamma": 0.7366,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 134,
+      "token": "Venice",
+      "category": "content_words",
+      "kl_divergence": 0.0764,
+      "surprise_gamma": 0.7321,
+      "thought_triggered": true
+    },
+    {
+      "token_index": 135,
+      "token": ".",
+      "category": "punctuation",
+      "kl_divergence": 0.1167,
+      "surprise_gamma": 0.7532,
+      "thought_triggered": true
+    }
+  ]
+}

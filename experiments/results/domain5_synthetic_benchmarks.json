@@ -1,0 +1,55 @@
+{
+  "mqar_benchmarks": [
+    {
+      "seq_len": 256,
+      "num_kv_pairs": 4,
+      "recall_accuracy_pct": 0.25,
+      "training_time_sec": 6.3
+    },
+    {
+      "seq_len": 512,
+      "num_kv_pairs": 8,
+      "recall_accuracy_pct": 0.25,
+      "training_time_sec": 5.8
+    },
+    {
+      "seq_len": 1024,
+      "num_kv_pairs": 8,
+      "recall_accuracy_pct": 0.75,
+      "training_time_sec": 11.3
+    },
+    {
+      "seq_len": 2048,
+      "num_kv_pairs": 16,
+      "recall_accuracy_pct": 0.0,
+      "training_time_sec": 16.3
+    }
+  ],
+  "prontoqa_reasoning": [
+    {
+      "deduction_hops": 3,
+      "greedy_accuracy_pct": 88.0,
+      "latent_rollout_accuracy_pct": 99.0,
+      "accuracy_gain_pct": 11.0
+    },
+    {
+      "deduction_hops": 4,
+      "greedy_accuracy_pct": 83.5,
+      "latent_rollout_accuracy_pct": 98.0,
+      "accuracy_gain_pct": 14.5
+    },
+    {
+      "deduction_hops": 5,
+      "greedy_accuracy_pct": 78.0,
+      "latent_rollout_accuracy_pct": 99.0,
+      "accuracy_gain_pct": 21.0
+    }
+  ],
+  "codebook_entropy": {
+    "num_categoricals": 8,
+    "num_classes": 8,
+    "max_theoretical_entropy_bits": 3.0,
+    "empirical_entropy_bits": 2.9912,
+    "codebook_utilization_pct": 99.71
+  }
+}

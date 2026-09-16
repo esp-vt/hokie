@@ -16,7 +16,8 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 if cur_dir not in sys.path:
     sys.path.insert(0, cur_dir)
 
-from train_0_5b_proper_h100 import HokieLM05B
+from train_0_5b_deep_conversational_h100 import HokieLM05B
+from train_0_5b_foundation_10b import HokieLM05BFoundation
 
 def parse_args():
     parser = argparse.ArgumentParser(description="NeuroWorld-LM Interactive Chat Shell")
@@ -66,19 +67,31 @@ class NeuroWorldChatBot:
 
             print(f"[*] Loaded 0.5B Architecture: vocab_size={vocab_size}, d_model={d_model}, num_layers={num_layers}")
 
-            self.model = HokieLM05B(
-                vocab_size=vocab_size,
-                d_model=d_model,
-                num_layers=num_layers,
-                d_state=16,
-                intermediate_dim=4096 if d_model >= 1024 else 1024
-            ).to(self.device)
+            is_foundation = any("swiglu" in k or "omega_multiplier" in k for k in state_dict)
+            if is_foundation:
+                print(f"[*] Instantiating HokieLM05BFoundation Architecture...")
+                self.model = HokieLM05BFoundation(
+                    vocab_size=vocab_size,
+                    d_model=d_model,
+                    num_layers=num_layers,
+                    d_state=16,
+                    intermediate_dim=4096 if d_model >= 1024 else 1024
+                ).to(self.device)
+            else:
+                print(f"[*] Instantiating HokieLM05B Conversational Architecture...")
+                self.model = HokieLM05B(
+                    vocab_size=vocab_size,
+                    d_model=d_model,
+                    num_layers=num_layers,
+                    d_state=16,
+                    intermediate_dim=4096 if d_model >= 1024 else 1024
+                ).to(self.device)
 
             self.model.load_state_dict(state_dict, strict=False)
             print(f"[✓] Checkpoint successfully loaded!")
         else:
-            print(f"[!] Warning: Checkpoint '{checkpoint_path}' not found. Initializing 0.5B model weights.")
-            self.model = HokieLM05B(
+            print(f"[!] Warning: Checkpoint '{checkpoint_path}' not found. Initializing HokieLM05BFoundation weights.")
+            self.model = HokieLM05BFoundation(
                 vocab_size=len(self.tokenizer),
                 d_model=1024,
                 num_layers=24,

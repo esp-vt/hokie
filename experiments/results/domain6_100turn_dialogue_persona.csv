@@ -1,0 +1,4 @@
+Model Architecture,Turn-100 Fact Recall (EM %),Multi-Hop Age Deduction (%),Persona Consistency Score (%),Transient Noise Leakage (%),Memory Footprint (KB),Step Latency (ms)
+Transformer_4K,0.0,0.0,45.056185158919625,0.0,131072.0,14.858733612665228
+Mamba_Passive,0.0,0.0,18.13741768418587,92.34382213509215,64.0,0.8207983332863931
+CAFE_NeuroWorld,100.0,100.0,98.41732445528318,1.7907284807395962,64.0,0.8494515762865834

@@ -1,0 +1,3 @@
+probe_name,original_accuracy_pct,post_unlearning_accuracy_pct,random_baseline_pct
+Linear Logistic Probe,38.67,2.33,2.0
+3-Layer Deep MLP Probe,25.17,2.17,2.0

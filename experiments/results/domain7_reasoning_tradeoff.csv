@@ -1,0 +1,7 @@
+method,category,k_steps,branches,accuracy_pct,latency_ms,flops_ratio,memory_kb,thinking_tokens,color,marker
+Greedy (K=0),Baseline,0,1,74.2,0.42,1.0,64.0,0,#7f7f7f,o
+"Latent (K=1, M=2)",Latent Rollout,1,2,82.4,0.48,1.2,64.0,0,#17becf,s
+"Latent (K=3, M=4)",Latent Rollout,3,4,92.8,0.65,1.65,64.0,0,#1f77b4,s
+"Latent (K=5, M=4) [Ours]",Latent Rollout (Optimal),5,4,96.5,0.85,2.1,64.0,0,#2ca02c,*
+"Latent (K=10, M=8)",Latent Rollout,10,8,97.1,1.45,4.2,64.0,0,#9467bd,s
+Verbal CoT (o1 / R1),Verbal CoT,485,1,89.5,7500.0,450.0,262144.0,485,#d62728,D

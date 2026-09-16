@@ -60,13 +60,6 @@ where $\mathbf{z}_t = \mathbf{W}_z \tilde{\mathbf{x}}_t$. The Hadamard product w
 
 When confidential data (e.g., API keys, passwords, or PII) must be purged under privacy mandates (e.g., GDPR Article 17 ``Right to be Forgotten''), \textsc{Hokie-LM} invokes the Cognitive Active Forgetting Engine (CAFE).
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\linewidth]{figures/fig20d_adversarial_jailbreak_unlearning.png}
-    \caption{\textbf{Adversarial Probe Leakage vs. Knowledge Retention.} Comparison of gradient-ascent unlearning, Mamba decay, and \textsc{Hokie-LM} CAFE orthogonal projection ($\mathbf{P}_\perp$) across 5 neural probe architectures.}
-    \label{fig:adversarial_unlearning}
-\end{figure}
-
 Let $\mathbf{V} \in \mathbb{R}^{K \times d_{\mathrm{model}}}$ represent the orthonormal basis spanning the $K$-token embedding subspace of the confidential entity:
 \begin{equation}
 \begin{split}
