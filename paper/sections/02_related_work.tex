@@ -8,12 +8,12 @@ While Linear Attention variants \citep{katharopoulos2020transformers} and low-ra
 Crucially, as proven in Theorem~\ref{thm:snr}, the strictly positive normalization kernel ($\exp(\mathbf{q}\mathbf{k}^\top/\sqrt{d}) > 0$) renders Transformers architecturally incapable of active forgetting, diluting attention entropy across obsolete distractor tokens and causing catastrophic context decay in multi-turn conversations.
 
 \paragraph{2. Selective State Space Models \& Linear Recurrent Hybrid Backbones.}
-To overcome the $\mathcal{O}(T)$ memory wall, modern structured State Space Models (SSMs) and linear RNNs—including S4 \citep{gu2022efficiently}, S5 \citep{smith2022simplified}, H3 \citep{fu2022hungry}, Mamba \citep{gu2023mamba}, Mamba-2 \citep{dao2024transformers}, RWKV-6 \citep{peng2023rwkv}, and xLSTM \citep{beck2024xlstm}—have emerged as linear-time alternatives. 
+To overcome the $\mathcal{O}(T)$ memory wall, structured State Space Models (SSMs) and linear RNNs—including S4 \citep{gu2022efficiently}, S5 \citep{smith2022simplified}, H3 \citep{fu2022hungry}, Mamba \citep{gu2023mamba}, Mamba-2 \citep{dao2024transformers}, RWKV-6 \citep{peng2023rwkv}, and xLSTM \citep{beck2024xlstm}—have emerged as linear-time alternatives. 
 By parameterizing continuous-time dynamical systems $\mathbf{h}'(t) = \mathbf{A}\mathbf{h}(t) + \mathbf{B}\mathbf{x}(t)$ with selective input-dependent discretization ($\Delta_t, \mathbf{B}_t, \mathbf{C}_t$), these models compress past context into an $\mathcal{O}(1)$ recurrent state. 
 Hybrid architectures such as Jamba \citep{lieber2024jamba} interleave Transformer attention layers with Mamba blocks. 
 However, existing SSMs operate as \textbf{passive, 1-lane deterministic signal filters with uniform exponential decay}. 
 Because all state coordinates decay uniformly ($\mathbf{A}_t = \exp(-\Delta_t \mathbf{A})$), passive SSMs suffer from severe memory amnesia on persistent system instructions while retaining noisy scratchpad artifacts. 
-\textsc{Hokie-LM} fundamentally departs from existing SSMs through the Cognitive Active Forgetting Engine (CAFE), which partitions state memory into three dedicated functional lifetime tiers ($\boldsymbol{\Omega}$) with decoupled active eviction ($E_t$) and exact subspace nullification ($\mathbf{P}_\perp$).
+\textsc{Hokie-LM} departs from existing SSMs through the Cognitive Active Forgetting Engine (CAFE), which partitions state memory into three dedicated functional lifetime tiers ($\boldsymbol{\Omega}$) with decoupled active eviction ($E_t$) and exact subspace nullification ($\mathbf{P}_\perp$).
 
 \begin{table*}[t]
 \centering
