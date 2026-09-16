@@ -50,7 +50,7 @@ graph TD
    - OpenAI o1이나 DeepSeek-R1 같은 모델은 내부 생각을 $500$개의 텍스트 단어로 모두 출력합니다.
    - 단어 하나를 뱉을 때마다 $128,000$차원 전체 단어장 투영을 거쳐야 하므로 연산량이 **$450\times$ 폭증($7.5$초 소요)**하며, 도중에 논리적 오탈자가 하나라도 들어가면 이를 컨텍스트로 받아들여 영구적인 환각에 갇힙니다.
 
-![Hokie-LM 전체 아키텍처 다이어그램](paper/figures/fig1_model_architecture.png)
+![Hokie-LM 전체 아키텍처 다이어그램](figures/fig1_model_architecture.png)
 *그림 1: Hokie-LM (NeuroWorld-LM) 인지 파운데이션 월드 모델 아키텍처. 24층 스택에서 연속 SSM 상태($h_t$), 이산 범주형 신념($z_t$), CAFE 능동 망각 엔진($P_\perp$), 무토큰 잠재 MCTS 플래너가 $64\text{ KB}$ (또는 $17\text{ KB}$) 고정 워킹 메모리 내에서 작동합니다.*
 
 ### 1.2 패시브 SSM (Mamba)의 한계
@@ -87,7 +87,7 @@ OpenAI o1, DeepSeek-R1 등은 복잡한 수학/추론 문제를 해결하기 위
 
 ## 3. 모델 방법론 (Methodology)
 
-![CAFE 상태 공간 데이터 플로우](paper/figures/fig19_state_space_cafe_dataflow.png)
+![CAFE 상태 공간 데이터 플로우](figures/fig19_state_space_cafe_dataflow.png)
 *그림 2: CAFE (Cognitive Active Forgetting Engine) 상태 공간 데이터 플로우. 놀람도 게이트 $\gamma_t$, 3단 채널 감쇠 $\boldsymbol{\Omega}$, 그리고 영공간 사영 $P_\perp$의 유기적 상호작용.*
 
 ### 3.1 이중 루프 인지 코어 (Dual-Loop Cognitive Core)
@@ -101,7 +101,7 @@ $$\gamma_t = \text{softplus}\Big( \mathcal{D}_{\mathrm{KL}}(q_\phi(z_t \mid h_{t
 * **문법 기능어/조사 ("은/는", "the", "is")**: 사전 예측 가능 $\to q \approx p \implies \gamma_t \approx 0.038$
 * **고유명사/숫자/새로운 팩트 ("클로이", "2018")**: 사전 불확실 $\to$ 뾰족한 사후 분포 수축 $\implies \gamma_t \approx 3.85 \sim 4.12$ ($100$배 자동 증폭)
 
-![토큰별 놀람도 히트맵](paper/figures/fig1_surprise_heatmap.png)
+![토큰별 놀람도 히트맵](figures/fig1_surprise_heatmap.png)
 *그림 3: 자연어 문맥에서 토큰 엔트로피에 따른 실시간 놀람도($\gamma_t$) 히트맵.*
 
 ### 3.3 인지적 능동 망각 엔진 (CAFE)
@@ -151,7 +151,7 @@ $$\gamma_t = \text{softplus}\Big( \mathcal{D}_{\mathrm{KL}}(q_\phi(z_t \mid h_{t
 
 ### 5.1 Domain 1: NVIDIA H100 하드웨어 가속 및 메모리 확장성
 
-![H100 Triton 가속 그래프](paper/figures/fig_hardware_triton_speedup.png)
+![H100 Triton 가속 그래프](figures/fig_hardware_triton_speedup.png)
 *그림 4: NVIDIA H100 하드웨어 가속 실측 결과. (좌) PyTorch 순차 스캔 대비 Triton 결합 스캔 지연시간 비교. (우) 시퀀스 길이에 따른 처리량(tokens/s) 및 가속비(Speedup %) 곡선 ($65,536$ 토큰에서 $+157,387\%$ 달성).*
 
 | 시퀀스 길이 ($L$) | Triton 결합 스캔 (ms) | PyTorch 순차 스캔 (ms) | 가속비 (Speedup %) | 초당 토큰 처리량 (tok/s) | Hokie-LM 상태 메모리 | Transformer KV 캐시 |
@@ -169,7 +169,7 @@ $$\gamma_t = \text{softplus}\Big( \mathcal{D}_{\mathrm{KL}}(q_\phi(z_t \mid h_{t
 
 ### 5.2 Domain 2: 상태 공간 역학 및 10만 토큰 연속 안정성
 
-![10만 토큰 상태 안정성 및 팩트 보존](paper/figures/fig_state_stability_100k.png)
+![10만 토큰 상태 안정성 및 팩트 보존](figures/fig_state_stability_100k.png)
 *그림 5: 100,000 토큰 연속 스트레스 테스트. (좌) 폭주하는 비유계 RNN 대비 CAFE의 $[0.015, 0.043]$ 호흡 대역 안정 수렴. (우) 토큰 거리에 따른 팩트 보존률 비교 (Passive Decay $0.0\%$ 붕괴 vs CAFE Persistent $98.5\%$ 완벽 보존).*
 
 * **비유계 RNN의 폭주**: 20,000 스텝에서 프로베니우스 노름이 폭주하여 `inf` 오버플로우 발생.
@@ -183,7 +183,7 @@ $$\gamma_t = \text{softplus}\Big( \mathcal{D}_{\mathrm{KL}}(q_\phi(z_t \mid h_{t
 
 ### 5.3 Domain 3: 선형 대수적 프라이버시 및 영공간 즉시 언러닝
 
-![신경망 프로브 공격 방어 그래프](paper/figures/fig_privacy_probe_attack.png)
+![신경망 프로브 공격 방어 그래프](figures/fig_privacy_probe_attack.png)
 *그림 6: 50개 기밀 엔티티에 대한 신경망 프로브 탈취 공격 방어 실측. $\mathbf{P}_\perp$ 사영 후 프로브 정확도가 $38.7\%$에서 이론적 무작위 찍기 확률인 $2.0\%$로 완벽 붕괴.*
 
 | 기밀 부분공간 랭크 ($k$) | 연산 정밀도 | 최대 잔차 (Max Residual) | 평균 잔차 (Mean Residual) | 비기밀 직교 지식 보존률 |
@@ -200,7 +200,7 @@ $$\gamma_t = \text{softplus}\Big( \mathcal{D}_{\mathrm{KL}}(q_\phi(z_t \mid h_{t
 
 ### 5.4 Domain 4: 실제 자연어 코퍼스 놀람도(`\gamma_t`) 분기 특성
 
-![자연어 코퍼스 놀람도 분포](paper/figures/fig_surprise_linguistic_profile.png)
+![자연어 코퍼스 놀람도 분포](figures/fig_surprise_linguistic_profile.png)
 *그림 7: 실제 NLP 코퍼스에서 언어학적 카테고리별로 측정된 샤논 놀람도($\gamma_t$) 분포.*
 
 * **문법 기능어 / 조사 (`the`, `is`, `은`, `는`)**: $\gamma_t = 0.038 \pm 0.012$ (낮은 놀람도 유지)
@@ -214,7 +214,7 @@ $$\gamma_t = \text{softplus}\Big( \mathcal{D}_{\mathrm{KL}}(q_\phi(z_t \mid h_{t
 
 ### 5.5 Domain 5: PrOntoQA 다단계 논리 연역 추론 및 코드북 엔트로피
 
-![PrOntoQA 다단계 논리 연역](paper/figures/fig_prontoqa_multihop_reasoning.png)
+![PrOntoQA 다단계 논리 연역](figures/fig_prontoqa_multihop_reasoning.png)
 *그림 8: PrOntoQA 3-Hop, 4-Hop, 5-Hop 논리 연역 벤치마크. Greedy 단방향 생성 대비 Zero-Token Latent Rollout ($k=3$)의 정확도 향상.*
 
 | 연역 과제 구성 | Greedy 단방향 생성 | Latent Rollout ($k=3$) | 정확도 향상폭 ($\Delta$) |
@@ -231,7 +231,7 @@ $$\gamma_t = \text{softplus}\Big( \mathcal{D}_{\mathrm{KL}}(q_\phi(z_t \mid h_{t
 
 ### 5.6 Domain 6: 다차원 추론 트레이드오프 및 파레토 프론티어 (Pareto Frontier)
 
-![다차원 추론 트레이드오프 파레토 프론티어](paper/figures/fig_reasoning_tradeoff_pareto.png)
+![다차원 추론 트레이드오프 파레토 프론티어](figures/fig_reasoning_tradeoff_pareto.png)
 *그림 9: 다차원 추론 트레이드오프 및 파레토 프론티어 분석. (좌) 추론 지연시간(ms, 로그 스케일) 대 5-Hop 연역 정확도 곡선. $K=5$ 잠재 롤아웃이 $0.85\text{ ms}$에 $96.5\%$로 최적의 파레토 스위트스팟을 형성하며, Verbal CoT(o1)는 $7,500\text{ ms}$로 파레토 곡선에서 완전히 이탈. (우) FLOPs 연산 비용 및 피크 메모리 비교.*
 
 | 추론 방식 및 탐색 깊이 (Method) | 분류 (Category) | 5-Hop 정확도 | 지연시간 (Latency) | 계산 비용 (FLOPs Ratio) | 피크 메모리 (Memory) | 중간 생성 단어수 (Tokens) |
@@ -254,7 +254,7 @@ $$\gamma_t = \text{softplus}\Big( \mathcal{D}_{\mathrm{KL}}(q_\phi(z_t \mid h_{t
 
 ### 5.7 Domain 7: 100턴 대화 장기 기억력 및 페르소나 일관성
 
-![100턴 대화 기억력 및 페르소나 일관성](paper/figures/fig_100turn_dialogue_persona.png)
+![100턴 대화 기억력 및 페르소나 일관성](figures/fig_100turn_dialogue_persona.png)
 *그림 10: 100턴 대화 장기 기억력 및 페르소나 일관성 벤치마크. (좌) 100턴 후 팩트 회상률, 만 8세 연령 연역 정확도, 적대적 탈옥 방어 일관성 비교. (우) 일상 잡담 노이즈 침범률 및 워킹 메모리 비교.*
 
 | 모델 아키텍처 (Model Architecture) | 100턴 팩트 회상 (`EM %`) | 만 8세 연령 연역 (`%`) | 페르소나 일관성 (`%`) | 잡담 노이즈 침범률 (`%`) | 워킹 메모리 (Memory) | 스텝 지연시간 |
